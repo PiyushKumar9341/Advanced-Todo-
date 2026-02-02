@@ -20,6 +20,7 @@ const db = firebase.firestore();
 
 let currentUser = null; // Firebase user (null if logged out)
 
+
 // =========================
 // Main App Logic
 // =========================
@@ -30,8 +31,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   const addTaskBtn = document.getElementById('addTaskBtn');
   const taskList = document.getElementById('taskList');
 
-  // Pehle localStorage use hota tha; ab tasks memory me rahenge,
-  // load/save Firestore se hoga.
+  // In-memory tasks, synced with Firestore
   let tasks = [];
 
   // --- AI Welcome / User Name Elements ---
@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', async function () {
   const closeWelcomeBtn = document.getElementById('closeWelcomeBtn');
   const storedUserName = localStorage.getItem('todoUserName');
   const userNameDisplay = document.getElementById('userName');
-  // NEW: popup ka Google button
   const welcomeGoogleBtn = document.getElementById('welcomeGoogleBtn');
 
   // --- Auth Buttons ---
@@ -82,20 +81,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     return 'evening';
   }
 
+  // Simplified: no Netlify function, just static AI-like message
   async function fetchAiWelcomeMessage(userName) {
-    try {
-      const response = await fetch('/.netlify/functions/get-ai-welcome', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userName: userName, timeOfDay: getTimeOfDay() })
-      });
-      const data = await response.json();
-      return response.ok && data.message
-        ? data.message
-        : `Hello ${userName}, let's get organized!`;
-    } catch (error) {
-      return `Hello ${userName}, ready for a productive ${getTimeOfDay()}?`;
-    }
+    return `Hello ${userName}, ready for a productive ${getTimeOfDay()}?`;
   }
 
   async function handleWelcomeFlow(userName) {
@@ -124,7 +112,6 @@ document.addEventListener('DOMContentLoaded', async function () {
   // Firestore: Tasks CRUD
   // =========================
 
-  // user-specific collection reference helper
   function getUserTodosCollection() {
     if (!currentUser) return null;
     return db.collection('todos').doc(currentUser.uid).collection('items');
@@ -217,11 +204,9 @@ document.addEventListener('DOMContentLoaded', async function () {
   // =========================
 
   if (storedUserName) {
-    // Returning user (AI welcome name)
     if (userNameDisplay) userNameDisplay.textContent = storedUserName;
     handleWelcomeFlow(storedUserName);
   } else if (welcomeOverlay) {
-    // First time user experience
     welcomeOverlay.style.display = 'flex';
     modalTitle.textContent = 'Welcome to your Advanced TODO!';
     modalMessage.textContent = 'What should I call you?';
@@ -240,7 +225,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
   }
 
-  // Optional: allow closing overlay manually
   if (closeWelcomeBtn && welcomeOverlay) {
     closeWelcomeBtn.addEventListener('click', () => {
       welcomeOverlay.style.display = 'none';
@@ -251,7 +235,6 @@ document.addEventListener('DOMContentLoaded', async function () {
   // Tasks (in-memory + Firestore)
   // =========================
 
-  // Filter handling
   let currentFilter = 'all';
 
   function getFilteredTasks() {
@@ -284,10 +267,8 @@ document.addEventListener('DOMContentLoaded', async function () {
       completeBtn.className = 'complete-btn';
       completeBtn.textContent = task.completed ? 'Undo' : 'Done';
       completeBtn.addEventListener('click', async () => {
-        // local state update
         task.completed = !task.completed;
         renderTasks();
-        // Firestore update
         await toggleTaskCompletionInFirestore(task);
       });
 
@@ -295,10 +276,8 @@ document.addEventListener('DOMContentLoaded', async function () {
       deleteBtn.className = 'delete-btn';
       deleteBtn.textContent = 'Delete';
       deleteBtn.addEventListener('click', async () => {
-        // local state update
         tasks = tasks.filter(t => t !== task);
         renderTasks();
-        // Firestore delete
         await deleteTaskFromFirestore(task);
       });
 
@@ -321,7 +300,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     statsBar.textContent = `Total: ${total} · Completed: ${completed} · Remaining: ${remaining}`;
   }
 
-  // Add Task (now Firestore)
   async function addTask() {
     if (!taskInput) return;
     const text = taskInput.value.trim();
@@ -482,8 +460,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   async function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     try {
-      await auth.signInWithPopup(provider); // popup yahan se chalega
-      // onAuthStateChanged listener handle karega
+      await auth.signInWithPopup(provider);
     } catch (err) {
       console.error('Google sign-in error:', err);
       showMessage('Sign-in failed.');
@@ -493,7 +470,6 @@ document.addEventListener('DOMContentLoaded', async function () {
   async function signOutUser() {
     try {
       await auth.signOut();
-      // onAuthStateChanged listener handle karega
     } catch (err) {
       console.error('Sign-out error:', err);
       showMessage('Sign-out failed.');
@@ -504,7 +480,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     googleLoginBtn.addEventListener('click', signInWithGoogle);
   }
 
-  // NEW: popup ke Google button se bhi same login function
   if (welcomeGoogleBtn) {
     welcomeGoogleBtn.addEventListener('click', signInWithGoogle);
   }
@@ -521,11 +496,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     currentUser = user || null;
 
     if (currentUser) {
-      // UI updates on login
       if (googleLoginBtn) googleLoginBtn.style.display = 'none';
       if (logoutBtn) logoutBtn.style.display = 'inline-block';
 
-      // Optionally show Firebase displayName in greeting if no local name set
       if (!storedUserName && userNameDisplay) {
         userNameDisplay.textContent = currentUser.displayName || 'Friend';
       }
@@ -533,7 +506,6 @@ document.addEventListener('DOMContentLoaded', async function () {
       await loadTasksFromFirestore();
       showMessage('Signed in successfully!');
     } else {
-      // Logged out
       tasks = [];
       renderTasks();
 
@@ -544,6 +516,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
   });
 
-  // --- Initial Render (empty or after auth loads) ---
+  // Initial render
   renderTasks();
 });
