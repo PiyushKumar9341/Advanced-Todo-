@@ -2,6 +2,11 @@
    Base layout / light theme
    ========================= */
 
+html {
+    width: 100%;
+    overflow-x: hidden;
+}
+
 body {
     font-family: 'Inter', sans-serif;
     background-color: #f0f2f5;
@@ -255,7 +260,13 @@ h3.feature-title {
     transform: translateY(-1px);
 }
 
-/* Clear all */
+/* Clear all wrapper + button (inside card, centered) */
+
+.clear-all-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0 16px;
+}
 
 #clearAllBtn {
     background-color: #f97316;
@@ -269,6 +280,7 @@ h3.feature-title {
     white-space: nowrap;
     transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
     box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+    max-width: 100%;
 }
 
 #clearAllBtn:hover {
@@ -504,8 +516,8 @@ footer {
 #scrollToTopBtn {
     display: none;
     position: fixed;
-    bottom: 30px;
-    right: 30px;
+    bottom: 16px;
+    right: 16px;
     z-index: 99;
     border: none;
     outline: none;
@@ -516,6 +528,8 @@ footer {
     font-size: 18px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     transition: background-color 0.3s ease, transform 0.2s ease;
+    max-width: 56px;
+    max-height: 56px;
 }
 
 #scrollToTopBtn:hover {
@@ -545,8 +559,7 @@ footer {
 
 #welcomeOverlay {
     position: fixed;
-    top: 0;
-    left: 0;
+    inset: 0;
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.7);
@@ -556,6 +569,8 @@ footer {
     z-index: 1000;
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
+    padding: 16px;
+    box-sizing: border-box;
 }
 
 #welcomeModal {
@@ -564,11 +579,12 @@ footer {
     border-radius: 10px;
     text-align: center;
     max-width: 400px;
-    width: 90%;
+    width: 100%;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 0 20px rgba(0, 123, 255, 0.6),
                 0 0 40px rgba(0, 123, 255, 0.3);
     border: none;
+    margin: 0 auto;
 }
 
 #userNameInput {
@@ -953,6 +969,7 @@ body.dark-mode .copy-email-btn:hover {
     margin: 20px auto;
     padding: 20px 16px;
     max-width: 100%;
+    width: 100%;
     border-radius: 0;
   }
 
@@ -998,6 +1015,18 @@ body.dark-mode .copy-email-btn:hover {
 
   .features-list {
     gap: 10px;
+  }
+
+  .input-group {
+    flex-direction: column;
+  }
+
+  #addTaskBtn {
+    width: 100%;
+  }
+
+  .filter {
+    flex-wrap: wrap;
   }
 }
 
