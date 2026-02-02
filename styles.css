@@ -4,6 +4,7 @@
 
 html {
   width: 100%;
+  max-width: 100%;
   overflow-x: hidden;
 }
 
@@ -31,6 +32,7 @@ body {
   text-align: center;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3), 0 0 20px rgba(0, 123, 255, 0.2);
+  box-sizing: border-box;
 }
 
 /* Heading */
@@ -361,6 +363,7 @@ h3.feature-title {
   display: flex;
   gap: 5px;
   margin-left: auto;
+  flex-wrap: wrap; /* overflow fix */
 }
 
 #taskList li.completed span {
@@ -564,6 +567,7 @@ footer {
   -webkit-backdrop-filter: blur(5px);
   padding: 16px;
   box-sizing: border-box;
+  max-width: 100%;
 }
 
 #welcomeModal {
@@ -578,6 +582,7 @@ footer {
               0 0 40px rgba(0, 123, 255, 0.3);
   border: none;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 #userNameInput {
@@ -937,6 +942,7 @@ body.dark-mode .copy-email-btn:hover {
     max-width: 100%;
     width: 100%;
     border-radius: 0;
+    box-sizing: border-box;
   }
 
   h1 {
@@ -1005,4 +1011,15 @@ body.dark-mode .copy-email-btn:hover {
   body::-webkit-scrollbar {
     display: none;
   }
+}
+
+/* Extra clamp for safe layout */
+
+img, svg {
+  max-width: 100%;
+  height: auto;
+}
+
+button, input {
+  max-width: 100%;
 }
