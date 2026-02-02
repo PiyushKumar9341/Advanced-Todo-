@@ -20,7 +20,7 @@
 </head>
 <body>
   <div class="container">
-    <!-- TITLE + SMALL LOGO (NEW: sirf ye wrap add kiya) -->
+    <!-- TITLE -->
     <h1>Advanced TODO</h1>
 
     <!-- Motivational Quote -->
@@ -31,18 +31,20 @@
 
     <!-- Personalized Welcome Message -->
     <p id="personalizedGreeting" class="greeting-message">
-      Hello, <span id="userName" class="font-bold text-blue-600 cursor-pointer"></span>!
+      Hello.. <span id="userName" class="font-bold text-blue-600 cursor-pointer"></span>🚀
     </p>
 
-    <!-- (Future) Google Auth Buttons -->
+    <!-- Google Auth Buttons -->
     <div class="auth-buttons">
       <button id="googleLoginBtn">Sign in with Google</button>
       <button id="logoutBtn" style="display:none;">Logout</button>
     </div>
 
+    <!-- Task input + Add + Clear all -->
     <div class="input-group">
       <input type="text" id="taskInput" placeholder="Enter your task here..." />
       <button id="addTaskBtn">Add Task</button>
+      <button id="clearAllBtn">Clear all</button>
     </div>
 
     <!-- Filter Buttons -->
@@ -52,147 +54,125 @@
       <button class="filter-btn" data-filter="completed">Completed</button>
     </div>
 
+    <!-- Task list -->
     <ul id="taskList"></ul>
 
-    <!-- Key Features Section -->
+    <!-- Key Features Section (updated layout, no About section) -->
     <section id="features" class="section-spacing">
-      <h2 class="section-title">Key Features</h2>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">
-            <!-- AI-Powered Welcome Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                 class="lucide lucide-bot">
-              <path d="M12 8V4H8" />
-              <path d="M2 14h2a2 2 0 0 1 2 2v3a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-3a2 2 0 0 1 2-2h2v-2a2 2 0 0 0-2-2h-2a2 2 0 0 1-2-2V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v4" />
-            </svg>
+      <h2 class="section-title">What makes Advanced TODO different?</h2>
+      <p class="section-description">
+        Advanced TODO is a modern to‑do application designed to keep your tasks organized,
+        reduce clutter, and make daily planning easier for you.
+      </p>
+
+      <div class="features-list">
+        <!-- 1. AI welcome -->
+        <div class="feature-row">
+          <div class="feature-main">
+            <div class="feature-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                   viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 8V4H8" />
+                <path d="M2 14h2a2 2 0 0 1 2 2v3a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-3a2 2 0 0 1 2-2h2v-2a2 2 0 0 0-2-2h-2a2 2 0 0 1-2-2V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v4" />
+              </svg>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">AI‑powered welcome</h3>
+              <p class="feature-description">
+                Personalized greeting based on your name and time of day.
+              </p>
+            </div>
           </div>
-          <h3 class="feature-title">AI-Powered Welcome</h3>
-          <p class="feature-description">
-            Get a personalized greeting tailored to your name and time of day.
-          </p>
+          <span class="feature-tag">Feels personal</span>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <!-- Google Sign-in Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                 class="lucide lucide-users">
-              <path d="M16 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M8 21v-2a4 4 0 0 1 3-3.87" />
-              <circle cx="12" cy="7" r="4" />
-              <path d="M6 8a4 4 0 1 0 6-3.46" />
-            </svg>
+        <!-- 2. Google sign‑in & sync -->
+        <div class="feature-row">
+          <div class="feature-main">
+            <div class="feature-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                   viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M8 21v-2a4 4 0 0 1 3-3.87" />
+                <circle cx="12" cy="7" r="4" />
+                <path d="M6 8a4 4 0 1 0 6-3.46" />
+              </svg>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">Google sign‑in & sync</h3>
+              <p class="feature-description">
+                Secure login with your Google account, tasks synced across devices.
+              </p>
+            </div>
           </div>
-          <h3 class="feature-title">Google Sign-in & Sync</h3>
-          <p class="feature-description">
-            Sign in with Google to keep your tasks safely stored in the cloud and synced across all your devices.
-          </p>
+          <span class="feature-tag">Cloud backup</span>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <!-- Task Management Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                 class="lucide lucide-check-circle-2">
-              <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
-              <path d="m9 12 2 2 4-4" />
-            </svg>
+        <!-- 3. Smart task list -->
+        <div class="feature-row">
+          <div class="feature-main">
+            <div class="feature-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                   viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">Smart task management</h3>
+              <p class="feature-description">
+                Add, mark done, delete, and filter tasks by status in one place.
+              </p>
+            </div>
           </div>
-          <h3 class="feature-title">Task Management</h3>
-          <p class="feature-description">
-            Add, complete, and delete tasks with ease to keep your list updated.
-          </p>
+          <span class="feature-tag">Zero clutter</span>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <!-- Task Filtering Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                 class="lucide lucide-filter">
-              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-            </svg>
+        <!-- 4. Dark mode -->
+        <div class="feature-row">
+          <div class="feature-main">
+            <div class="feature-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                   viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 0 1-9-9Z" />
+                <path d="M19 3v4" />
+                <path d="M21 5h-4" />
+              </svg>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">Dark / light themes</h3>
+              <p class="feature-description">
+                One‑click theme toggle for comfortable use day or night.
+              </p>
+            </div>
           </div>
-          <h3 class="feature-title">Task Filtering</h3>
-          <p class="feature-description">
-            View all, active, or completed tasks for better focus.
-          </p>
+          <span class="feature-tag">Easy on eyes</span>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <!-- Dark Mode Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                 class="lucide lucide-moon-star">
-              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 0 1-9-9Z" />
-              <path d="M19 3v4" />
-              <path d="M21 5h-4" />
-              <path d="M12 22v-2" />
-              <path d="M10 14H7.5" />
-              <path d="M14 14h2.5" />
-              <path d="M13.5 18.5L12 17l-1.5 1.5" />
-              <path d="M17.5 10.5 16 12l1.5 1.5" />
-            </svg>
+        <!-- 5. Motivational quotes -->
+        <div class="feature-row">
+          <div class="feature-main">
+            <div class="feature-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                   viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">Motivational micro‑nudges</h3>
+              <p class="feature-description">
+                Short, focused quotes to keep you moving without distraction.
+              </p>
+            </div>
           </div>
-          <h3 class="feature-title">Dark/Light Mode</h3>
-          <p class="feature-description">
-            Switch between themes for comfortable viewing day or night.
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">
-            <!-- Responsive Design Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                 class="lucide lucide-smartphone">
-              <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
-              <path d="M12 18h.01" />
-            </svg>
-          </div>
-          <h3 class="feature-title">Responsive Design</h3>
-          <p class="feature-description">
-            Optimized for seamless use across all devices (mobile, tablet, desktop).
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">
-            <!-- Motivational Quotes Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                 class="lucide lucide-message-square">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-          </div>
-          <h3 class="feature-title">Motivational Quotes</h3>
-          <p class="feature-description">
-            Get daily inspiration to keep you motivated and productive.
-          </p>
+          <span class="feature-tag">Stay motivated</span>
         </div>
       </div>
-    </section>
-
-    <!-- About This App Section -->
-    <section id="about" class="section-spacing">
-      <h2 class="section-title">About This App</h2>
-      <p class="section-description">
-        This is a highly advanced To-Do List application designed to boost your productivity.
-        It helps you organize your tasks efficiently with smart features and a user-friendly
-        interface. Stay on top of your goals, whether personal or professional, with ease.
-      </p>
     </section>
   </div>
 
@@ -204,10 +184,7 @@
       <input type="text" id="userNameInput" placeholder="Your name">
       <div id="modalButtonsContainer">
         <button id="submitNameBtn" class="modal-cta-button">Let's Go!</button>
-
-        <!-- NEW: Google sign-in button in popup -->
         <button id="welcomeGoogleBtn" class="modal-cta-button">Sign in with Google</button>
-
         <button id="closeWelcomeBtn" class="modal-cta-button">Close</button>
       </div>
     </div>

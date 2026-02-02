@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   const taskInput = document.getElementById('taskInput');
   const addTaskBtn = document.getElementById('addTaskBtn');
   const taskList = document.getElementById('taskList');
+  const clearAllBtn = document.getElementById('clearAllBtn'); // NEW
 
   // In-memory tasks, synced with Firestore
   let tasks = [];
@@ -89,7 +90,6 @@ document.addEventListener('DOMContentLoaded', async function () {
   async function handleWelcomeFlow(userName) {
     if (!welcomeOverlay) return;
 
-    // Loading state
     modalTitle.textContent = 'Welcome back!';
     modalMessage.textContent = 'Generating a personalized message...';
     if (userNameInput) userNameInput.style.display = 'none';
@@ -102,7 +102,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     const aiMessage = await fetchAiWelcomeMessage(userName);
     modalMessage.textContent = aiMessage;
 
-    // Auto-close after 4s
     setTimeout(() => {
       welcomeOverlay.style.display = 'none';
     }, 4000);
@@ -195,6 +194,37 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
   }
 
+  // NEW: clear all tasks (for current user)
+  async function clearAllTasks() {
+    if (!currentUser) {
+      showMessage('Please sign in first.');
+      return;
+    }
+
+    const colRef = getUserTodosCollection();
+    if (!colRef) return;
+
+    if (!confirm('Clear all tasks? This cannot be undone.')) return;
+
+    try {
+      const snapshot = await colRef.get();
+      const batch = db.batch();
+      snapshot.forEach(doc => batch.delete(doc.ref));
+      await batch.commit(); // batch delete for all docs [web:280][web:283]
+
+      tasks = [];
+      renderTasks();
+      showMessage('All tasks cleared.');
+    } catch (err) {
+      console.error('Error clearing tasks:', err);
+      showMessage('Failed to clear tasks.');
+    }
+  }
+
+  if (clearAllBtn) {
+    clearAllBtn.addEventListener('click', clearAllTasks);
+  }
+
   // =========================
   // Welcome Logic Initial Check (local name)
   // =========================
@@ -229,18 +259,20 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   // =========================
   // Tasks (in-memory + Firestore)
-  // =========================
+// =========================
 
   let currentFilter = 'all';
 
   function getFilteredTasks() {
+    let list = [...tasks];
+
     if (currentFilter === 'active') {
-      return tasks.filter(t => !t.completed);
+      list = list.filter(t => !t.completed);
+    } else if (currentFilter === 'completed') {
+      list = list.filter(t => t.completed);
     }
-    if (currentFilter === 'completed') {
-      return tasks.filter(t => t.completed);
-    }
-    return tasks;
+
+    return list;
   }
 
   function renderTasks() {
@@ -302,7 +334,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     const text = taskInput.value.trim();
     if (!text) return;
 
-    // 1) UI / local state instant update
     const tempTask = {
       id: 'temp-' + Date.now(),
       text,
@@ -312,7 +343,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     renderTasks();
     taskInput.value = '';
 
-    // 2) Background Firestore write
     const realId = await addTaskToFirestore(text);
     if (realId) {
       const idx = tasks.findIndex(t => t.id === tempTask.id);
@@ -332,14 +362,41 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   // =========================
-  // Filter Buttons
+  // Filter Buttons + URL hash
   // =========================
 
   const filterButtons = document.querySelectorAll('.filter-btn');
+
+  function applyFilterFromHash() {
+    let hash = window.location.hash;
+    if (hash === '#active' || hash === '#completed') {
+      currentFilter = hash.replace('#', '');
+    } else {
+      currentFilter = 'all';
+    }
+
+    filterButtons.forEach(b => {
+      const val = b.dataset.filter || 'all';
+      if (val === currentFilter) {
+        b.classList.add('active');
+      } else {
+        b.classList.remove('active');
+      }
+    });
+
+    renderTasks();
+  }
+
   filterButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const filterValue = btn.dataset.filter || 'all';
       currentFilter = filterValue;
+
+      if (filterValue === 'all') {
+        history.replaceState(null, '', window.location.pathname);
+      } else {
+        window.location.hash = filterValue;
+      }
 
       filterButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -348,8 +405,11 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
   });
 
+  applyFilterFromHash();
+  window.addEventListener('hashchange', applyFilterFromHash);
+
   const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
-  if (allBtn) allBtn.classList.add('active');
+  if (allBtn && !window.location.hash) allBtn.classList.add('active');
 
   // =========================
   // Dark Mode
@@ -398,8 +458,8 @@ document.addEventListener('DOMContentLoaded', async function () {
       'One thing at a time, done well.',
       'Today’s actions are tomorrow’s results.'
     ];
-    const randomQuote = Math.floor(Math.random() * quotes.length);
-    quoteEl.textContent = quotes[randomQuote];
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    quoteEl.textContent = quotes[randomIndex];
   }
 
   // =========================
