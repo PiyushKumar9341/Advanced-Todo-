@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   const taskInput = document.getElementById('taskInput');
   const addTaskBtn = document.getElementById('addTaskBtn');
   const taskList = document.getElementById('taskList');
-  const clearAllBtn = document.getElementById('clearAllBtn'); // NEW
+  const clearAllBtn = document.getElementById('clearAllBtn');
 
   // In-memory tasks, synced with Firestore
   let tasks = [];
@@ -41,9 +41,12 @@ document.addEventListener('DOMContentLoaded', async function () {
   const userNameInput = document.getElementById('userNameInput');
   const submitNameBtn = document.getElementById('submitNameBtn');
   const closeWelcomeBtn = document.getElementById('closeWelcomeBtn');
-  const storedUserName = localStorage.getItem('todoUserName');
+  const storedUserName = localStorage.getItem('todoUserName'); // per-device
   const userNameDisplay = document.getElementById('userName');
   const welcomeGoogleBtn = document.getElementById('welcomeGoogleBtn');
+
+  // current session me jo naam dikhana hai
+  let sessionUserName = storedUserName || null;
 
   // --- Auth Buttons ---
   const googleLoginBtn = document.getElementById('googleLoginBtn');
@@ -81,7 +84,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     return 'evening';
   }
 
-  // Simplified: no Netlify function, just static AI-like message
+  // Simplified: static AI-like message
   async function fetchAiWelcomeMessage(userName) {
     return `Hello ${userName}, ready for a productive ${getTimeOfDay()}?`;
   }
@@ -89,7 +92,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   async function handleWelcomeFlow(userName) {
     if (!welcomeOverlay) return;
 
-    modalTitle.textContent = 'Welcome back!';
+    modalTitle.textContent = 'Welcome!';
     modalMessage.textContent = 'Generating a personalized message...';
     if (userNameInput) userNameInput.style.display = 'none';
     if (submitNameBtn) submitNameBtn.style.display = 'none';
@@ -193,7 +196,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
   }
 
-  // NEW: clear all tasks (for current user)
+  // Clear all tasks (for current user)
   async function clearAllTasks() {
     if (!currentUser) {
       showMessage('Please sign in first.');
@@ -203,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const colRef = getUserTodosCollection();
     if (!colRef) return;
 
-    // yahan guard: agar koi task hi nahi hai to popup mat dikhao
+    // Agar koi task hi nahi hai to popup mat dikhao
     if (!tasks || tasks.length === 0) {
       return;
     }
@@ -230,40 +233,8 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   // =========================
-  // Welcome Logic Initial Check (local name)
-  // =========================
-
-  if (storedUserName) {
-    if (userNameDisplay) userNameDisplay.textContent = storedUserName;
-    handleWelcomeFlow(storedUserName);
-  } else if (welcomeOverlay) {
-    welcomeOverlay.style.display = 'flex';
-    modalTitle.textContent = 'Welcome to your Advanced TODO!';
-    modalMessage.textContent = 'What should I call you?';
-    if (userNameInput) userNameInput.style.display = 'block';
-    if (submitNameBtn) submitNameBtn.style.display = 'block';
-    if (closeWelcomeBtn) closeWelcomeBtn.style.display = 'none';
-
-    if (submitNameBtn) {
-      submitNameBtn.onclick = async () => {
-        const name = userNameInput.value.trim();
-        if (name) {
-          localStorage.setItem('todoUserName', name);
-          await handleWelcomeFlow(name);
-        }
-      };
-    }
-  }
-
-  if (closeWelcomeBtn && welcomeOverlay) {
-    closeWelcomeBtn.addEventListener('click', () => {
-      welcomeOverlay.style.display = 'none';
-    });
-  }
-
-  // =========================
   // Tasks (in-memory + Firestore)
-  // =========================
+// =========================
 
   let currentFilter = 'all';
 
@@ -573,16 +544,56 @@ document.addEventListener('DOMContentLoaded', async function () {
     currentUser = user || null;
 
     if (currentUser) {
+      // 1) Firebase account ke naam se sessionUserName set karo
+      const firebaseName = currentUser.displayName || null; // Google ka naam [web:398][web:406]
+
+      if (firebaseName) {
+        sessionUserName = firebaseName;
+        // optional: localStorage me bhi save kar sakte ho
+        localStorage.setItem('todoUserName', firebaseName);
+      } else if (storedUserName) {
+        sessionUserName = storedUserName;
+      }
+
+      if (userNameDisplay && sessionUserName) {
+        userNameDisplay.textContent = sessionUserName;
+      }
+
       if (googleLoginBtn) googleLoginBtn.style.display = 'none';
       if (logoutBtn) logoutBtn.style.display = 'inline-block';
-
-      if (!storedUserName && userNameDisplay) {
-        userNameDisplay.textContent = currentUser.displayName || 'Friend';
-      }
 
       await loadTasksFromFirestore();
       showMessage('Signed in successfully!');
     } else {
+      // User signed-out state
+      currentUser = null;
+
+      // Guest user ke liye localStorage naam + popup
+      if (storedUserName) {
+        sessionUserName = storedUserName;
+        if (userNameDisplay) userNameDisplay.textContent = storedUserName;
+        // yahan popup nahi, sirf text
+      } else if (welcomeOverlay) {
+        welcomeOverlay.style.display = 'flex';
+        modalTitle.textContent = 'Welcome to your Advanced TODO!';
+        modalMessage.textContent = 'What should I call you?';
+        if (userNameInput) userNameInput.style.display = 'block';
+        if (submitNameBtn) submitNameBtn.style.display = 'block';
+        if (closeWelcomeBtn) closeWelcomeBtn.style.display = 'none';
+
+        if (submitNameBtn) {
+          submitNameBtn.onclick = async () => {
+            const name = userNameInput.value.trim();
+            if (name) {
+              localStorage.setItem('todoUserName', name); // per-device store [web:407]
+              sessionUserName = name;
+              if (userNameDisplay) userNameDisplay.textContent = name;
+              await handleWelcomeFlow(name); // ek hi baar AI-wala popup
+            }
+          };
+        }
+      }
+
       tasks = [];
       renderTasks();
 
