@@ -145,6 +145,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
   }
 
+  // Firestore write only, returns real id
   async function addTaskToFirestore(text) {
     if (!currentUser) {
       showMessage('Please sign in to save tasks.');
@@ -159,12 +160,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         completed: false,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-      tasks.push({
-        id: docRef.id,
-        text,
-        completed: false
-      });
-      renderTasks();
+      return docRef.id;
     } catch (err) {
       console.error('Error adding task:', err);
       showMessage('Failed to add task.');
@@ -300,13 +296,30 @@ document.addEventListener('DOMContentLoaded', async function () {
     statsBar.textContent = `Total: ${total} · Completed: ${completed} · Remaining: ${remaining}`;
   }
 
+  // Instant UI update, Firestore in background
   async function addTask() {
     if (!taskInput) return;
     const text = taskInput.value.trim();
     if (!text) return;
 
-    await addTaskToFirestore(text);
+    // 1) UI / local state instant update
+    const tempTask = {
+      id: 'temp-' + Date.now(),
+      text,
+      completed: false
+    };
+    tasks.push(tempTask);
+    renderTasks();
     taskInput.value = '';
+
+    // 2) Background Firestore write
+    const realId = await addTaskToFirestore(text);
+    if (realId) {
+      const idx = tasks.findIndex(t => t.id === tempTask.id);
+      if (idx !== -1) {
+        tasks[idx].id = realId;
+      }
+    }
   }
 
   if (addTaskBtn) {
@@ -385,8 +398,8 @@ document.addEventListener('DOMContentLoaded', async function () {
       'One thing at a time, done well.',
       'Today’s actions are tomorrow’s results.'
     ];
-    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-    quoteEl.textContent = randomQuote;
+    const randomQuote = Math.floor(Math.random() * quotes.length);
+    quoteEl.textContent = quotes[randomQuote];
   }
 
   // =========================
