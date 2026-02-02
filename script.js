@@ -1,609 +1,525 @@
 // =========================
-// Firebase Setup (top level)
+// Firebase Setup (compat)
 // =========================
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDJfJ1NkJOmmsYSb7RLJPFeZR_8-tqoUgQ",
-  authDomain: "advanced-todo-b93ba.firebaseapp.com",
-  projectId: "advanced-todo-b93ba",
-  storageBucket: "advanced-todo-b93ba.firebasestorage.app",
-  messagingSenderId: "685947792786",
-  appId: "1:685947792786:web:e49cf23e4a977c4c0be54b",
-  measurementId: "G-CWBZZYCR1M"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_BUCKET",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
-// Initialize Firebase (compat)
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
-const db = firebase.firestore();
-
-let currentUser = null; // Firebase user (null if logged out)
+const db   = firebase.firestore();
 
 // =========================
-// Main App Logic
+// DOM Elements
 // =========================
 
-document.addEventListener('DOMContentLoaded', async function () {
-  // --- Core To-Do List Elements ---
-  const taskInput = document.getElementById('taskInput');
-  const addTaskBtn = document.getElementById('addTaskBtn');
-  const taskList = document.getElementById('taskList');
-  const clearAllBtn = document.getElementById('clearAllBtn');
+const taskInput            = document.getElementById('taskInput');
+const addTaskBtn           = document.getElementById('addTaskBtn');
+const taskList             = document.getElementById('taskList');
+const filterButtons        = document.querySelectorAll('.filter-btn');
+const clearAllBtn          = document.getElementById('clearAllBtn');
 
-  // In-memory tasks, synced with Firestore
-  let tasks = [];
+const darkModeToggle       = document.getElementById('darkModeToggle');
+const scrollToTopBtn       = document.getElementById('scrollToTopBtn');
 
-  // --- AI Welcome / User Name Elements ---
-  const welcomeOverlay = document.getElementById('welcomeOverlay');
-  const modalTitle = document.getElementById('modalTitle');
-  const modalMessage = document.getElementById('modalMessage');
-  const userNameInput = document.getElementById('userNameInput');
-  const submitNameBtn = document.getElementById('submitNameBtn');
-  const closeWelcomeBtn = document.getElementById('closeWelcomeBtn');
-  const storedUserName = localStorage.getItem('todoUserName'); // per-device
-  const userNameDisplay = document.getElementById('userName');
-  const welcomeGoogleBtn = document.getElementById('welcomeGoogleBtn');
+const quoteElement         = document.getElementById('quote');
+const messageBox           = document.getElementById('messageBox');
 
-  // current session me jo naam dikhana hai
-  let sessionUserName = storedUserName || null;
+const googleLoginBtn       = document.getElementById('googleLoginBtn');
+const logoutBtn            = document.getElementById('logoutBtn');
 
-  // --- Auth Buttons ---
-  const googleLoginBtn = document.getElementById('googleLoginBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
+const personalizedGreeting = document.getElementById('personalizedGreeting');
+const userNameSpan         = document.getElementById('userName');
 
-  // --- Misc UI Elements ---
-  const messageBox = document.getElementById('messageBox');
-  const darkModeToggle = document.getElementById('darkModeToggle');
-  const quoteEl = document.getElementById('quote');
-  const scrollToTopBtn = document.getElementById('scrollToTopBtn');
-  const emailAddressFooter = document.getElementById('emailAddressFooter');
-  const copyEmailBtnFooter = document.getElementById('copyEmailBtnFooter');
+const welcomeOverlay       = document.getElementById('welcomeOverlay');
+const welcomeModal         = document.getElementById('welcomeModal');
+const userNameInput        = document.getElementById('userNameInput');
+const submitNameBtn        = document.getElementById('submitNameBtn');
+const welcomeGoogleBtn     = document.getElementById('welcomeGoogleBtn');
+const closeWelcomeBtn      = document.getElementById('closeWelcomeBtn');
 
-  // Stats bar
-  let statsBar = document.getElementById('statsBar');
-  if (!statsBar) {
-    statsBar = document.createElement('div');
-    statsBar.id = 'statsBar';
-    statsBar.style.margin = '10px 0 15px';
-    statsBar.style.fontSize = '0.9em';
-    statsBar.style.color = '#555';
-    if (taskList && taskList.parentElement) {
-      taskList.parentElement.insertBefore(statsBar, taskList);
-    }
+const emailAddressFooter   = document.getElementById('emailAddressFooter');
+const copyEmailBtnFooter   = document.getElementById('copyEmailBtnFooter');
+
+const statsBar             = document.getElementById('statsBar');
+
+// =========================
+// State
+// =========================
+
+let currentFilter = 'all';
+let currentUser   = null;      // Firebase user
+let tasks         = [];        // Local cache of tasks
+
+// =========================
+// Helpers
+// =========================
+
+function showMessage(text, type = 'info') {
+  if (!messageBox) return;
+  messageBox.textContent = text;
+  messageBox.style.display = 'block';
+  messageBox.style.opacity = '1';
+
+  // simple color
+  if (type === 'error') {
+    messageBox.style.backgroundColor = '#fee2e2';
+    messageBox.style.color = '#b91c1c';
+  } else {
+    messageBox.style.backgroundColor = '#d1fae5';
+    messageBox.style.color = '#065f46';
   }
 
-  // =========================
-  // Helper Functions
-  // =========================
-
-  function getTimeOfDay() {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'morning';
-    if (hour < 18) return 'afternoon';
-    return 'evening';
-  }
-
-  // Simplified: static AI-like message
-  async function fetchAiWelcomeMessage(userName) {
-    return `Hello ${userName}, ready for a productive ${getTimeOfDay()}?`;
-  }
-
-  async function handleWelcomeFlow(userName) {
-    if (!welcomeOverlay) return;
-
-    modalTitle.textContent = 'Welcome!';
-    modalMessage.textContent = 'Generating a personalized message...';
-    if (userNameInput) userNameInput.style.display = 'none';
-    if (submitNameBtn) submitNameBtn.style.display = 'none';
-    if (closeWelcomeBtn) closeWelcomeBtn.style.display = 'none';
-    welcomeOverlay.style.display = 'flex';
-
-    if (userNameDisplay) userNameDisplay.textContent = userName;
-
-    const aiMessage = await fetchAiWelcomeMessage(userName);
-    modalMessage.textContent = aiMessage;
-
+  setTimeout(() => {
+    messageBox.style.opacity = '0';
     setTimeout(() => {
-      welcomeOverlay.style.display = 'none';
-    }, 4000);
+      messageBox.style.display = 'none';
+    }, 300);
+  }, 2000);
+}
+
+function getGreetingByTime() {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
+function updateGreeting(name) {
+  if (!personalizedGreeting || !userNameSpan) return;
+
+  if (name && name.trim() !== '') {
+    userNameSpan.textContent = name;
+    personalizedGreeting.style.display = 'block';
+    personalizedGreeting.textContent = `${getGreetingByTime()}, `;
+    const span = document.createElement('span');
+    span.id = 'userName';
+    span.textContent = name;
+    span.className = 'font-bold text-blue-600 cursor-pointer';
+    personalizedGreeting.innerHTML = `Hello.. <span id="userName" class="font-bold text-blue-600 cursor-pointer">${name}</span>🚀`;
+  } else {
+    userNameSpan.textContent = '';
+    personalizedGreeting.style.display = 'none';
+  }
+}
+
+function saveLocalName(name) {
+  if (!name) return;
+  localStorage.setItem('userName', name);
+}
+
+function getLocalName() {
+  return localStorage.getItem('userName') || '';
+}
+
+function clearLocalName() {
+  localStorage.removeItem('userName');
+}
+
+// =========================
+/* Tasks - Firestore */
+// =========================
+
+function getTasksCollectionRef(uid) {
+  return db.collection('users').doc(uid).collection('tasks');
+}
+
+async function loadTasksForUser(uid) {
+  if (!uid) {
+    tasks = [];
+    renderTasks();
+    return;
+  }
+  try {
+    const snap = await getTasksCollectionRef(uid).orderBy('createdAt', 'asc').get();
+    tasks = snap.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    renderTasks();
+  } catch (err) {
+    console.error('Error loading tasks:', err);
+    showMessage('Could not load tasks.', 'error');
+  }
+}
+
+async function addTaskToUser(uid, text) {
+  if (!uid) return;
+  const colRef = getTasksCollectionRef(uid);
+  const docRef = await colRef.add({
+    text,
+    completed: false,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  tasks.push({ id: docRef.id, text, completed: false });
+  renderTasks();
+}
+
+async function updateTaskCompletion(uid, taskId, completed) {
+  if (!uid) return;
+  const colRef = getTasksCollectionRef(uid);
+  await colRef.doc(taskId).update({ completed });
+  const t = tasks.find(t => t.id === taskId);
+  if (t) t.completed = completed;
+  renderTasks();
+}
+
+async function deleteTask(uid, taskId) {
+  if (!uid) return;
+  const colRef = getTasksCollectionRef(uid);
+  await colRef.doc(taskId).delete();
+  tasks = tasks.filter(t => t.id !== taskId);
+  renderTasks();
+}
+
+async function clearAllTasks(uid) {
+  if (!uid) return;
+  const colRef = getTasksCollectionRef(uid);
+  const snap = await colRef.get();
+  const batch = db.batch();
+  snap.docs.forEach(doc => batch.delete(doc.ref));
+  await batch.commit();
+  tasks = [];
+  renderTasks();
+}
+
+// =========================
+// Render tasks + stats
+// =========================
+
+function renderTasks() {
+  if (!taskList) return;
+  taskList.innerHTML = '';
+
+  let filtered = tasks;
+  if (currentFilter === 'active') {
+    filtered = tasks.filter(t => !t.completed);
+  } else if (currentFilter === 'completed') {
+    filtered = tasks.filter(t => t.completed);
   }
 
-  // =========================
-  // Firestore: Tasks CRUD
-  // =========================
+  filtered.forEach(task => {
+    const li = document.createElement('li');
+    if (task.completed) li.classList.add('completed');
 
-  function getUserTodosCollection() {
-    if (!currentUser) return null;
-    return db.collection('todos').doc(currentUser.uid).collection('items');
+    const span = document.createElement('span');
+    span.textContent = task.text;
+
+    const btnWrapper = document.createElement('div');
+    btnWrapper.className = 'flex space-x-2';
+
+    const completeBtn = document.createElement('button');
+    completeBtn.textContent = task.completed ? 'Undo' : 'Complete';
+    completeBtn.className = 'complete-btn';
+    completeBtn.addEventListener('click', async () => {
+      if (!currentUser) {
+        showMessage('Sign in to manage tasks.', 'error');
+        return;
+      }
+      const newState = !task.completed;
+      await updateTaskCompletion(currentUser.uid, task.id, newState);
+    });
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.addEventListener('click', async () => {
+      if (!currentUser) {
+        showMessage('Sign in to delete tasks.', 'error');
+        return;
+      }
+      await deleteTask(currentUser.uid, task.id);
+    });
+
+    btnWrapper.appendChild(completeBtn);
+    btnWrapper.appendChild(deleteBtn);
+
+    li.appendChild(span);
+    li.appendChild(btnWrapper);
+
+    taskList.appendChild(li);
+  });
+
+  // stats
+  if (statsBar) {
+    const total = tasks.length;
+    const completed = tasks.filter(t => t.completed).length;
+    const active = total - completed;
+    statsBar.textContent = `Total: ${total} • Active: ${active} • Completed: ${completed}`;
   }
+}
 
-  async function loadTasksFromFirestore() {
+// =========================
+// Filters
+// =========================
+
+filterButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter || 'all';
+    renderTasks();
+  });
+});
+
+// =========================
+// Add Task
+// =========================
+
+addTaskBtn.addEventListener('click', async () => {
+  const text = taskInput.value.trim();
+  if (!text) {
+    showMessage('Please enter a task.', 'error');
+    return;
+  }
+  if (!currentUser) {
+    showMessage('Sign in with Google to save tasks.', 'error');
+    return;
+  }
+  try {
+    await addTaskToUser(currentUser.uid, text);
+    taskInput.value = '';
+  } catch (err) {
+    console.error('Error adding task:', err);
+    showMessage('Could not add task.', 'error');
+  }
+});
+
+taskInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    addTaskBtn.click();
+  }
+});
+
+// =========================
+// Clear All
+// =========================
+
+if (clearAllBtn) {
+  clearAllBtn.addEventListener('click', async () => {
     if (!currentUser) {
-      tasks = [];
-      renderTasks();
+      showMessage('Sign in to clear tasks.', 'error');
       return;
     }
-
-    const colRef = getUserTodosCollection();
-    if (!colRef) return;
-
+    if (!confirm('Delete all tasks?')) return;
     try {
-      const snapshot = await colRef.orderBy('createdAt', 'asc').get();
-      tasks = [];
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        tasks.push({
-          id: doc.id,
-          text: data.text,
-          completed: data.completed || false
-        });
-      });
-      renderTasks();
-    } catch (err) {
-      console.error('Error loading tasks from Firestore:', err);
-      showMessage('Failed to load tasks.');
-    }
-  }
-
-  // Firestore write only, returns real id
-  async function addTaskToFirestore(text) {
-    if (!currentUser) {
-      showMessage('Please sign in to save tasks.');
-      return;
-    }
-    const colRef = getUserTodosCollection();
-    if (!colRef) return;
-
-    try {
-      const docRef = await colRef.add({
-        text,
-        completed: false,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      return docRef.id;
-    } catch (err) {
-      console.error('Error adding task:', err);
-      showMessage('Failed to add task.');
-    }
-  }
-
-  async function toggleTaskCompletionInFirestore(task) {
-    if (!currentUser || !task.id) return;
-    const colRef = getUserTodosCollection();
-    if (!colRef) return;
-
-    try {
-      await colRef.doc(task.id).update({
-        completed: !task.completed
-      });
-    } catch (err) {
-      console.error('Error updating task:', err);
-      showMessage('Failed to update task.');
-    }
-  }
-
-  async function deleteTaskFromFirestore(task) {
-    if (!currentUser || !task.id) return;
-    const colRef = getUserTodosCollection();
-    if (!colRef) return;
-
-    try {
-      await colRef.doc(task.id).delete();
-    } catch (err) {
-      console.error('Error deleting task:', err);
-      showMessage('Failed to delete task.');
-    }
-  }
-
-  // Clear all tasks (for current user)
-  async function clearAllTasks() {
-    if (!currentUser) {
-      showMessage('Please sign in first.');
-      return;
-    }
-
-    const colRef = getUserTodosCollection();
-    if (!colRef) return;
-
-    // Agar koi task hi nahi hai to popup mat dikhao
-    if (!tasks || tasks.length === 0) {
-      return;
-    }
-
-    if (!confirm('Clear all tasks? This cannot be undone.')) return;
-
-    try {
-      const snapshot = await colRef.get();
-      const batch = db.batch();
-      snapshot.forEach(doc => batch.delete(doc.ref));
-      await batch.commit();
-
-      tasks = [];
-      renderTasks();
+      await clearAllTasks(currentUser.uid);
       showMessage('All tasks cleared.');
     } catch (err) {
       console.error('Error clearing tasks:', err);
-      showMessage('Failed to clear tasks.');
+      showMessage('Could not clear tasks.', 'error');
     }
-  }
+  });
+}
 
-  if (clearAllBtn) {
-    clearAllBtn.addEventListener('click', clearAllTasks);
-  }
-
-  // =========================
-  // Tasks (in-memory + Firestore)
+// =========================
+// Dark Mode
 // =========================
 
-  let currentFilter = 'all';
-
-  function getFilteredTasks() {
-    let list = [...tasks];
-
-    if (currentFilter === 'active') {
-      list = list.filter(t => !t.completed);
-    } else if (currentFilter === 'completed') {
-      list = list.filter(t => t.completed);
-    }
-
-    return list;
+function applySavedTheme() {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'dark') {
+    document.body.classList.add('dark-mode');
+    if (darkModeToggle) darkModeToggle.textContent = 'Light Mode';
+  } else {
+    document.body.classList.remove('dark-mode');
+    if (darkModeToggle) darkModeToggle.textContent = 'Dark Mode';
   }
+}
 
-  function renderTasks() {
-    if (!taskList) return;
-    taskList.innerHTML = '';
+applySavedTheme();
 
-    const filtered = getFilteredTasks();
-
-    filtered.forEach(task => {
-      const li = document.createElement('li');
-      if (task.completed) li.classList.add('completed');
-
-      const textSpan = document.createElement('span');
-      textSpan.textContent = task.text;
-
-      const actionsDiv = document.createElement('div');
-      actionsDiv.className = 'flex space-x-2';
-
-      const completeBtn = document.createElement('button');
-      completeBtn.className = 'complete-btn';
-      completeBtn.textContent = task.completed ? 'Undo' : 'Done';
-      completeBtn.addEventListener('click', async () => {
-        task.completed = !task.completed;
-        renderTasks();
-        await toggleTaskCompletionInFirestore(task);
-      });
-
-      const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'delete-btn';
-      deleteBtn.textContent = 'Delete';
-      deleteBtn.addEventListener('click', async () => {
-        tasks = tasks.filter(t => t !== task);
-        renderTasks();
-        await deleteTaskFromFirestore(task);
-      });
-
-      actionsDiv.appendChild(completeBtn);
-      actionsDiv.appendChild(deleteBtn);
-
-      li.appendChild(textSpan);
-      li.appendChild(actionsDiv);
-      taskList.appendChild(li);
-    });
-
-    updateStats();
-  }
-
-  function updateStats() {
-    if (!statsBar) return;
-    const total = tasks.length;
-    const completed = tasks.filter(t => t.completed).length;
-    const remaining = total - completed;
-    statsBar.textContent = `Total: ${total} · Completed: ${completed} · Remaining: ${remaining}`;
-  }
-
-  // Instant UI update, Firestore in background
-  async function addTask() {
-    if (!taskInput) return;
-    const text = taskInput.value.trim();
-    if (!text) return;
-
-    const tempTask = {
-      id: 'temp-' + Date.now(),
-      text,
-      completed: false
-    };
-    tasks.push(tempTask);
-    renderTasks();
-    taskInput.value = '';
-
-    const realId = await addTaskToFirestore(text);
-    if (realId) {
-      const idx = tasks.findIndex(t => t.id === tempTask.id);
-      if (idx !== -1) {
-        tasks[idx].id = realId;
-      }
-    }
-  }
-
-  if (addTaskBtn) {
-    addTaskBtn.addEventListener('click', addTask);
-  }
-  if (taskInput) {
-    taskInput.addEventListener('keypress', e => {
-      if (e.key === 'Enter') addTask();
-    });
-  }
-
-  // =========================
-  // Filter Buttons + URL hash
-  // =========================
-
-  const filterButtons = document.querySelectorAll('.filter-btn');
-
-  function applyFilterFromHash() {
-    let hash = window.location.hash;
-    if (hash === '#active' || hash === '#completed') {
-      currentFilter = hash.replace('#', '');
-    } else {
-      currentFilter = 'all';
-    }
-
-    filterButtons.forEach(b => {
-      const val = b.dataset.filter || 'all';
-      if (val === currentFilter) {
-        b.classList.add('active');
-      } else {
-        b.classList.remove('active');
-      }
-    });
-
-    renderTasks();
-  }
-
-  filterButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const filterValue = btn.dataset.filter || 'all';
-      currentFilter = filterValue;
-
-      if (filterValue === 'all') {
-        history.replaceState(null, '', window.location.pathname);
-      } else {
-        window.location.hash = filterValue;
-      }
-
-      filterButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      renderTasks();
-    });
+if (darkModeToggle) {
+  darkModeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    darkModeToggle.textContent = isDark ? 'Light Mode' : 'Dark Mode';
   });
+}
 
-  applyFilterFromHash();
-  window.addEventListener('hashchange', applyFilterFromHash);
+// =========================
+// Scroll to top
+// =========================
 
-  const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
-  if (allBtn && !window.location.hash) allBtn.classList.add('active');
-
-  // =========================
-  // Dark Mode
-  // =========================
-
-  function applyDarkModeFromStorage() {
-    const isDark = localStorage.getItem('darkMode') === 'enabled';
-    if (isDark) {
-      document.body.classList.add('dark-mode');
-      if (darkModeToggle) darkModeToggle.textContent = 'Light Mode';
-    } else {
-      document.body.classList.remove('dark-mode');
-      if (darkModeToggle) darkModeToggle.textContent = 'Dark Mode';
-    }
+window.addEventListener('scroll', () => {
+  if (!scrollToTopBtn) return;
+  if (document.documentElement.scrollTop > 200) {
+    scrollToTopBtn.style.display = 'block';
+  } else {
+    scrollToTopBtn.style.display = 'none';
   }
+});
 
-  applyDarkModeFromStorage();
+if (scrollToTopBtn) {
+  scrollToTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
 
-  if (darkModeToggle) {
-    darkModeToggle.addEventListener('click', () => {
-      const isDark = document.body.classList.toggle('dark-mode');
-      localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
-      darkModeToggle.textContent = isDark ? 'Light Mode' : 'Dark Mode';
-    });
-  }
+// =========================
+// Motivational Quote
+// =========================
 
-  // =========================
-  // Motivational Quote
-  // =========================
+const quotes = [
+  "Small steps every day lead to big results.",
+  "Done is better than perfect.",
+  "You don’t have to be great to start, but you have to start to be great.",
+  "Focus on the next task, not the whole mountain.",
+];
 
-  if (quoteEl) {
-    const quotes = [
-      'Small steps every day lead to big results.',
-      'Your future is created by what you do today, not tomorrow.',
-      'Focus on being productive, not busy.',
-      'Done is better than perfect.',
-      'Every task you finish is a win.',
-      'Start with one small task, then another.',
-      'Every finished task is a step forward.',
-      'Five focused minutes can change your whole day.',
-      'Write it down, do it, then relax.',
-      'Tiny progress every day beats big plans someday.',
-      'Clear list, clear mind, better focus.',
-      'If it takes less than two minutes, do it now.',
-      'Your future self will thank you for this task.',
-      'One thing at a time, done well.',
-      'Today’s actions are tomorrow’s results.'
-    ];
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    quoteEl.textContent = quotes[randomIndex];
-  }
+function showRandomQuote() {
+  if (!quoteElement) return;
+  const idx = Math.floor(Math.random() * quotes.length);
+  quoteElement.textContent = quotes[idx];
+}
 
-  // =========================
-  // Scroll to Top Button
-  // =========================
+showRandomQuote();
 
-  if (scrollToTopBtn) {
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 200) {
-        scrollToTopBtn.style.display = 'block';
-      } else {
-        scrollToTopBtn.style.display = 'none';
-      }
-    });
+// =========================
+// Copy email footer
+// =========================
 
-    scrollToTopBtn.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
-
-  // =========================
-  // Copy Email + Messages
-  // =========================
-
-  function showMessage(text) {
-    if (!messageBox) return;
-    messageBox.textContent = text;
-    messageBox.style.display = 'block';
-    messageBox.style.opacity = '1';
-    messageBox.style.backgroundColor = '#e6fffa';
-    messageBox.style.border = '1px solid #38b2ac';
-    messageBox.style.color = '#234e52';
-
-    setTimeout(() => {
-      messageBox.style.opacity = '0';
-      setTimeout(() => {
-        messageBox.style.display = 'none';
-      }, 300);
-    }, 2000);
-  }
-
-  if (copyEmailBtnFooter && emailAddressFooter) {
-    copyEmailBtnFooter.addEventListener('click', async () => {
-      const email = emailAddressFooter.textContent.trim();
-      try {
-        await navigator.clipboard.writeText(email);
-        showMessage('Email copied to clipboard!');
-      } catch (err) {
-        showMessage('Failed to copy email.');
-      }
-    });
-  }
-
-  // =========================
-  // Name hover glow
-  // =========================
-
-  if (userNameDisplay) {
-    userNameDisplay.addEventListener('mouseenter', () => {
-      userNameDisplay.classList.add('hovered');
-    });
-    userNameDisplay.addEventListener('mouseleave', () => {
-      userNameDisplay.classList.remove('hovered');
-    });
-  }
-
-  // =========================
-  // Auth: Google Login / Logout
-  // =========================
-
-  async function signInWithGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
+if (copyEmailBtnFooter && emailAddressFooter) {
+  copyEmailBtnFooter.addEventListener('click', async () => {
+    const email = emailAddressFooter.textContent.trim();
     try {
-      await auth.signInWithPopup(provider);
+      await navigator.clipboard.writeText(email);
+      showMessage('Email copied to clipboard.');
     } catch (err) {
-      console.error('Google sign-in error:', err);
-      showMessage('Sign-in failed.');
-    }
-  }
-
-  async function signOutUser() {
-    try {
-      await auth.signOut();
-    } catch (err) {
-      console.error('Sign-out error:', err);
-      showMessage('Sign-out failed.');
-    }
-  }
-
-  if (googleLoginBtn) {
-    googleLoginBtn.addEventListener('click', signInWithGoogle);
-  }
-
-  if (welcomeGoogleBtn) {
-    welcomeGoogleBtn.addEventListener('click', signInWithGoogle);
-  }
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', signOutUser);
-  }
-
-  // =========================
-  // Auth State Listener
-  // =========================
-
-  auth.onAuthStateChanged(async (user) => {
-    currentUser = user || null;
-
-    if (currentUser) {
-      // 1) Firebase account ke naam se sessionUserName set karo
-      const firebaseName = currentUser.displayName || null; // Google ka naam [web:398][web:406]
-
-      if (firebaseName) {
-        sessionUserName = firebaseName;
-        // optional: localStorage me bhi save kar sakte ho
-        localStorage.setItem('todoUserName', firebaseName);
-      } else if (storedUserName) {
-        sessionUserName = storedUserName;
-      }
-
-      if (userNameDisplay && sessionUserName) {
-        userNameDisplay.textContent = sessionUserName;
-      }
-
-      if (googleLoginBtn) googleLoginBtn.style.display = 'none';
-      if (logoutBtn) logoutBtn.style.display = 'inline-block';
-
-      await loadTasksFromFirestore();
-      showMessage('Signed in successfully!');
-    } else {
-      // User signed-out state
-      currentUser = null;
-
-      // Guest user ke liye localStorage naam + popup
-      if (storedUserName) {
-        sessionUserName = storedUserName;
-        if (userNameDisplay) userNameDisplay.textContent = storedUserName;
-        // yahan popup nahi, sirf text
-      } else if (welcomeOverlay) {
-        welcomeOverlay.style.display = 'flex';
-        modalTitle.textContent = 'Welcome to your Advanced TODO!';
-        modalMessage.textContent = 'What should I call you?';
-        if (userNameInput) userNameInput.style.display = 'block';
-        if (submitNameBtn) submitNameBtn.style.display = 'block';
-        if (closeWelcomeBtn) closeWelcomeBtn.style.display = 'none';
-
-        if (submitNameBtn) {
-          submitNameBtn.onclick = async () => {
-            const name = userNameInput.value.trim();
-            if (name) {
-              localStorage.setItem('todoUserName', name); // per-device store [web:407]
-              sessionUserName = name;
-              if (userNameDisplay) userNameDisplay.textContent = name;
-              await handleWelcomeFlow(name); // ek hi baar AI-wala popup
-            }
-          };
-        }
-      }
-
-      tasks = [];
-      renderTasks();
-
-      if (googleLoginBtn) googleLoginBtn.style.display = 'inline-block';
-      if (logoutBtn) logoutBtn.style.display = 'none';
-
-      showMessage('You are signed out.');
+      showMessage('Could not copy email.', 'error');
     }
   });
+}
 
-  // Initial render
+// =========================
+// Welcome Modal (AI-like)
+// =========================
+
+function openWelcomeModal() {
+  if (!welcomeOverlay) return;
+  welcomeOverlay.style.display = 'flex';
+}
+
+function closeWelcomeModal() {
+  if (!welcomeOverlay) return;
+  welcomeOverlay.style.display = 'none';
+}
+
+submitNameBtn.addEventListener('click', () => {
+  const name = userNameInput.value.trim();
+  if (!name) {
+    showMessage('Please enter your name.', 'error');
+    return;
+  }
+  saveLocalName(name);
+  updateGreeting(name);
+  closeWelcomeModal();
+});
+
+closeWelcomeBtn.addEventListener('click', () => {
+  closeWelcomeModal();
+});
+
+welcomeGoogleBtn.addEventListener('click', async () => {
+  // same as main Google login
+  googleLoginBtn.click();
+});
+
+// =========================
+// Google Auth
+// =========================
+
+const provider = new firebase.auth.GoogleAuthProvider();
+
+googleLoginBtn.addEventListener('click', async () => {
+  try {
+    await auth.signInWithPopup(provider);
+    // onAuthStateChanged handle karega
+  } catch (err) {
+    console.error('Error during Google sign-in:', err);
+    showMessage('Google sign-in failed.', 'error');
+  }
+});
+
+logoutBtn.addEventListener('click', async () => {
+  try {
+    await auth.signOut();
+
+    // UI + local state reset
+    currentUser = null;
+    tasks = [];
+    renderTasks();
+
+    clearLocalName();
+    updateGreeting('');
+
+    googleLoginBtn.style.display = 'inline-block';
+    logoutBtn.style.display = 'none';
+
+    showMessage('You are signed out.');
+  } catch (err) {
+    console.error('Error signing out:', err);
+    showMessage('Error while signing out.', 'error');
+  }
+});
+
+// =========================
+// Auth State Observer
+// =========================
+
+auth.onAuthStateChanged(async (user) => {
+  currentUser = user;
+
+  if (user) {
+    // Logged in
+    googleLoginBtn.style.display = 'none';
+    logoutBtn.style.display = 'inline-block';
+
+    const displayName = user.displayName || getLocalName();
+    if (displayName) {
+      saveLocalName(displayName);
+      updateGreeting(displayName);
+    } else {
+      // if no displayName and no local name, open modal
+      openWelcomeModal();
+    }
+
+    await loadTasksForUser(user.uid);
+  } else {
+    // Logged out
+    googleLoginBtn.style.display = 'inline-block';
+    logoutBtn.style.display = 'none';
+
+    tasks = [];
+    renderTasks();
+
+    clearLocalName();
+    updateGreeting('');   // yahan se naam aur greeting dono clear
+
+    // Optional: show welcome modal only if first time
+    // openWelcomeModal();
+  }
+});
+
+// =========================
+// Initial UI
+// =========================
+
+window.addEventListener('load', () => {
+  const savedName = getLocalName();
+  if (savedName) {
+    updateGreeting(savedName);
+  } else {
+    // first time visitor
+    // openWelcomeModal();
+  }
   renderTasks();
 });
