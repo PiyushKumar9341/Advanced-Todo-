@@ -39,7 +39,6 @@ const personalizedGreeting = document.getElementById('personalizedGreeting');
 const userNameSpan         = document.getElementById('userName');
 
 const welcomeOverlay       = document.getElementById('welcomeOverlay');
-const welcomeModal         = document.getElementById('welcomeModal');
 const userNameInput        = document.getElementById('userNameInput');
 const submitNameBtn        = document.getElementById('submitNameBtn');
 const welcomeGoogleBtn     = document.getElementById('welcomeGoogleBtn');
@@ -55,8 +54,8 @@ const statsBar             = document.getElementById('statsBar');
 // =========================
 
 let currentFilter = 'all';
-let currentUser   = null;      // Firebase user
-let tasks         = [];        // Local cache of tasks
+let currentUser   = null;
+let tasks         = [];
 
 // =========================
 // Helpers
@@ -68,7 +67,6 @@ function showMessage(text, type = 'info') {
   messageBox.style.display = 'block';
   messageBox.style.opacity = '1';
 
-  // simple color
   if (type === 'error') {
     messageBox.style.backgroundColor = '#fee2e2';
     messageBox.style.color = '#b91c1c';
@@ -92,21 +90,18 @@ function getGreetingByTime() {
   return 'Good evening';
 }
 
+// yeh function DOM ko clean way se update karega
 function updateGreeting(name) {
-  if (!personalizedGreeting || !userNameSpan) return;
+  if (!personalizedGreeting) return;
 
   if (name && name.trim() !== '') {
-    userNameSpan.textContent = name;
     personalizedGreeting.style.display = 'block';
-    personalizedGreeting.textContent = `${getGreetingByTime()}, `;
-    const span = document.createElement('span');
-    span.id = 'userName';
-    span.textContent = name;
-    span.className = 'font-bold text-blue-600 cursor-pointer';
-    personalizedGreeting.innerHTML = `Hello.. <span id="userName" class="font-bold text-blue-600 cursor-pointer">${name}</span>🚀`;
+    personalizedGreeting.innerHTML =
+      `Hello.. <span id="userName" class="font-bold text-blue-600 cursor-pointer">${name}</span>🚀`;
   } else {
-    userNameSpan.textContent = '';
     personalizedGreeting.style.display = 'none';
+    personalizedGreeting.innerHTML =
+      `Hello.. <span id="userName" class="font-bold text-blue-600 cursor-pointer"></span>🚀`;
   }
 }
 
@@ -124,7 +119,7 @@ function clearLocalName() {
 }
 
 // =========================
-/* Tasks - Firestore */
+// Firestore helpers
 // =========================
 
 function getTasksCollectionRef(uid) {
@@ -247,7 +242,6 @@ function renderTasks() {
     taskList.appendChild(li);
   });
 
-  // stats
   if (statsBar) {
     const total = tasks.length;
     const completed = tasks.filter(t => t.completed).length;
@@ -293,9 +287,7 @@ addTaskBtn.addEventListener('click', async () => {
 });
 
 taskInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    addTaskBtn.click();
-  }
+  if (e.key === 'Enter') addTaskBtn.click();
 });
 
 // =========================
@@ -333,7 +325,6 @@ function applySavedTheme() {
     if (darkModeToggle) darkModeToggle.textContent = 'Dark Mode';
   }
 }
-
 applySavedTheme();
 
 if (darkModeToggle) {
@@ -351,11 +342,8 @@ if (darkModeToggle) {
 
 window.addEventListener('scroll', () => {
   if (!scrollToTopBtn) return;
-  if (document.documentElement.scrollTop > 200) {
-    scrollToTopBtn.style.display = 'block';
-  } else {
-    scrollToTopBtn.style.display = 'none';
-  }
+  scrollToTopBtn.style.display =
+    document.documentElement.scrollTop > 200 ? 'block' : 'none';
 });
 
 if (scrollToTopBtn) {
@@ -380,7 +368,6 @@ function showRandomQuote() {
   const idx = Math.floor(Math.random() * quotes.length);
   quoteElement.textContent = quotes[idx];
 }
-
 showRandomQuote();
 
 // =========================
@@ -393,14 +380,14 @@ if (copyEmailBtnFooter && emailAddressFooter) {
     try {
       await navigator.clipboard.writeText(email);
       showMessage('Email copied to clipboard.');
-    } catch (err) {
+    } catch {
       showMessage('Could not copy email.', 'error');
     }
   });
 }
 
 // =========================
-// Welcome Modal (AI-like)
+// Welcome Modal
 // =========================
 
 function openWelcomeModal() {
@@ -413,25 +400,30 @@ function closeWelcomeModal() {
   welcomeOverlay.style.display = 'none';
 }
 
-submitNameBtn.addEventListener('click', () => {
-  const name = userNameInput.value.trim();
-  if (!name) {
-    showMessage('Please enter your name.', 'error');
-    return;
-  }
-  saveLocalName(name);
-  updateGreeting(name);
-  closeWelcomeModal();
-});
+if (submitNameBtn) {
+  submitNameBtn.addEventListener('click', () => {
+    const name = userNameInput.value.trim();
+    if (!name) {
+      showMessage('Please enter your name.', 'error');
+      return;
+    }
+    saveLocalName(name);
+    updateGreeting(name);
+    closeWelcomeModal();
+  });
+}
 
-closeWelcomeBtn.addEventListener('click', () => {
-  closeWelcomeModal();
-});
+if (closeWelcomeBtn) {
+  closeWelcomeBtn.addEventListener('click', () => {
+    closeWelcomeModal();
+  });
+}
 
-welcomeGoogleBtn.addEventListener('click', async () => {
-  // same as main Google login
-  googleLoginBtn.click();
-});
+if (welcomeGoogleBtn) {
+  welcomeGoogleBtn.addEventListener('click', async () => {
+    googleLoginBtn.click();
+  });
+}
 
 // =========================
 // Google Auth
@@ -439,37 +431,40 @@ welcomeGoogleBtn.addEventListener('click', async () => {
 
 const provider = new firebase.auth.GoogleAuthProvider();
 
-googleLoginBtn.addEventListener('click', async () => {
-  try {
-    await auth.signInWithPopup(provider);
-    // onAuthStateChanged handle karega
-  } catch (err) {
-    console.error('Error during Google sign-in:', err);
-    showMessage('Google sign-in failed.', 'error');
-  }
-});
+if (googleLoginBtn) {
+  googleLoginBtn.addEventListener('click', async () => {
+    try {
+      await auth.signInWithPopup(provider); // click handler ke andar, popup-blocked kam hoga [web:31][web:34]
+      // success pe onAuthStateChanged chalega
+    } catch (err) {
+      console.error('Google sign-in error:', err);
+      showMessage('Google sign-in failed.', 'error');
+    }
+  });
+}
 
-logoutBtn.addEventListener('click', async () => {
-  try {
-    await auth.signOut();
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', async () => {
+    try {
+      await auth.signOut();
 
-    // UI + local state reset
-    currentUser = null;
-    tasks = [];
-    renderTasks();
+      currentUser = null;
+      tasks = [];
+      renderTasks();
 
-    clearLocalName();
-    updateGreeting('');
+      clearLocalName();
+      updateGreeting('');
 
-    googleLoginBtn.style.display = 'inline-block';
-    logoutBtn.style.display = 'none';
+      googleLoginBtn.style.display = 'inline-block';
+      logoutBtn.style.display = 'none';
 
-    showMessage('You are signed out.');
-  } catch (err) {
-    console.error('Error signing out:', err);
-    showMessage('Error while signing out.', 'error');
-  }
-});
+      showMessage('You are signed out.');
+    } catch (err) {
+      console.error('Error signing out:', err);
+      showMessage('Error while signing out.', 'error');
+    }
+  });
+}
 
 // =========================
 // Auth State Observer
@@ -480,32 +475,28 @@ auth.onAuthStateChanged(async (user) => {
 
   if (user) {
     // Logged in
-    googleLoginBtn.style.display = 'none';
-    logoutBtn.style.display = 'inline-block';
+    if (googleLoginBtn) googleLoginBtn.style.display = 'inline-block';
+    if (logoutBtn) logoutBtn.style.display = 'inline-block';
 
     const displayName = user.displayName || getLocalName();
     if (displayName) {
       saveLocalName(displayName);
-      updateGreeting(displayName);
+      updateGreeting(displayName);   // yahan se "Hello.. Piyush" aayega
     } else {
-      // if no displayName and no local name, open modal
       openWelcomeModal();
     }
 
     await loadTasksForUser(user.uid);
   } else {
     // Logged out
-    googleLoginBtn.style.display = 'inline-block';
-    logoutBtn.style.display = 'none';
+    if (googleLoginBtn) googleLoginBtn.style.display = 'inline-block';
+    if (logoutBtn) logoutBtn.style.display = 'none';
 
     tasks = [];
     renderTasks();
 
     clearLocalName();
-    updateGreeting('');   // yahan se naam aur greeting dono clear
-
-    // Optional: show welcome modal only if first time
-    // openWelcomeModal();
+    updateGreeting('');
   }
 });
 
@@ -518,7 +509,7 @@ window.addEventListener('load', () => {
   if (savedName) {
     updateGreeting(savedName);
   } else {
-    // first time visitor
+    // first time, agar chaho to popup dikhao
     // openWelcomeModal();
   }
   renderTasks();
