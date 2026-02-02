@@ -20,7 +20,6 @@ const db = firebase.firestore();
 
 let currentUser = null; // Firebase user (null if logged out)
 
-
 // =========================
 // Main App Logic
 // =========================
@@ -204,13 +203,18 @@ document.addEventListener('DOMContentLoaded', async function () {
     const colRef = getUserTodosCollection();
     if (!colRef) return;
 
+    // yahan guard: agar koi task hi nahi hai to popup mat dikhao
+    if (!tasks || tasks.length === 0) {
+      return;
+    }
+
     if (!confirm('Clear all tasks? This cannot be undone.')) return;
 
     try {
       const snapshot = await colRef.get();
       const batch = db.batch();
       snapshot.forEach(doc => batch.delete(doc.ref));
-      await batch.commit(); // batch delete for all docs [web:280][web:283]
+      await batch.commit();
 
       tasks = [];
       renderTasks();
@@ -259,7 +263,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   // =========================
   // Tasks (in-memory + Firestore)
-// =========================
+  // =========================
 
   let currentFilter = 'all';
 

@@ -1006,3 +1006,14 @@ body.dark-mode .copy-email-btn:hover {
 * {
     font-family: 'Inter', sans-serif;
 }
+
+/* Mobile par scrollbar hide (vertical line nahi dikhe) */
+@media (max-width: 600px) {
+  body {
+    scrollbar-width: none;            /* Firefox */
+  }
+
+  body::-webkit-scrollbar {
+    display: none;                    /* Chrome, Safari, Edge */
+  }
+}
