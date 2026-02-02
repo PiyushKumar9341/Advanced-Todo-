@@ -14,8 +14,20 @@ body {
 
 /* Dark Mode Styles */
 body.dark-mode {
-    background-color: #2C2C2C; /* Background: slate gray */
-    color: #E4E4E4; /* Primary Text: light gray */
+    background-color: #121212; /* deeper but not pure black */
+    color: #f1f5f9; /* near-white, higher contrast */
+}
+
+body.dark-mode .container {
+    background-color: #1f2933; /* dark slate gray */
+    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.12), 0 0 20px rgba(255, 255, 255, 0.06);
+}
+
+/* Default dark-mode text */
+body.dark-mode p,
+body.dark-mode li,
+body.dark-mode span {
+    color: #e5e7eb;
 }
 
 /* Main Container Styling */
@@ -33,12 +45,6 @@ body.dark-mode {
     box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3), 0 0 20px rgba(0, 123, 255, 0.2);
 }
 
-body.dark-mode .container {
-    background-color: #3A3A3A; /* Slightly lighter than body background for contrast */
-    /* Glowing effect for the container in dark mode (white glow) */
-    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.15), 0 0 20px rgba(255, 255, 255, 0.1);
-}
-
 /* Heading Styles */
 h1 {
     font-family: 'Orbitron', sans-serif; /* Applied new font for the title */
@@ -50,8 +56,8 @@ h1 {
 }
 
 body.dark-mode h1 {
-    color: #007bff; /* Set to blue as requested */
-    text-shadow: none; /* Removed glowing effect for title in dark mode */
+    color: #60a5fa; /* softer bright blue */
+    text-shadow: none;
 }
 
 /* Personalized Greeting Message Styling */
@@ -68,7 +74,7 @@ body.dark-mode h1 {
 }
 
 body.dark-mode .greeting-message {
-    color: #E4E4E4; /* Primary Text: light gray for dark mode */
+    color: #e5e7eb;
 }
 
 .greeting-message #userName {
@@ -92,11 +98,10 @@ body.dark-mode .greeting-message #userName {
 body.dark-mode .greeting-message #userName.hovered {
     /* White glowing effect in dark mode */
     text-shadow: 0 0 8px rgba(255, 255, 255, 0.7), 0 0 15px rgba(255, 255, 255, 0.5);
-    color: inherit; /* Keep existing color, don't change it */
+    color: inherit;
 }
 
-
-/* Keyframes for fade-in and slide-up animation (kept for other potential uses, but not applied to greeting-message) */
+/* Keyframes for fade-in and slide-up animation */
 @keyframes fadeInSlideUp {
     from {
         opacity: 0;
@@ -108,7 +113,6 @@ body.dark-mode .greeting-message #userName.hovered {
     }
 }
 
-
 /* Section Headings (About This App, Key Features) */
 h2.section-title {
     font-size: 1.8em; /* Made smaller */
@@ -117,13 +121,12 @@ h2.section-title {
     margin-top: 30px; /* Space above section title */
     margin-bottom: 15px; /* Space below section title */
     transition: text-shadow 0.3s ease; /* Smooth transition for glow */
-    /* Default subtle glow (always on) */
     text-shadow: 0 0 3px rgba(0, 123, 255, 0.2);
 }
 
 body.dark-mode h2.section-title {
-    color: #A8DADC; /* Accent 1 for dark mode */
-    text-shadow: 0 0 3px rgba(168, 218, 220, 0.3);
+    color: #60a5fa;
+    text-shadow: 0 0 3px rgba(96, 165, 250, 0.3);
 }
 
 /* Section Spacing */
@@ -152,138 +155,137 @@ body.dark-mode h2.section-title {
     border: 1px solid #e2e6ea;
     border-radius: 10px;
     padding: 15px; /* Reduced padding */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* Default shadow, no glow here */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* Default shadow */
     transition: transform 0.2s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 body.dark-mode .feature-card {
-    background-color: #3A3A3A;
-    border-color: #555;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Default shadow in dark mode, no glow here */
+    background-color: #222b36;
+    border-color: #4b5563;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
 /* Glowing effect on each feature card on hover (Desktop only) */
-@media (min-width: 769px) { /* Apply hover glow only on screens wider than mobile */
+@media (min-width: 769px) {
     .feature-card:hover {
-        transform: translateY(-5px); /* Lift effect on hover */
-        /* Combined box-shadow: original shadow + glowing shadow */
-        box-shadow: 0 6px 12px rgba(0,0,0,0.1), 0 0 0 3px rgba(0, 123, 255, 0.25), 0 0 8px rgba(0, 123, 255, 0.5) !important;
-        border-color: #007bff !important; /* Blue border on hover */
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.1),
+                    0 0 0 3px rgba(0, 123, 255, 0.25),
+                    0 0 8px rgba(0, 123, 255, 0.5) !important;
+        border-color: #007bff !important;
     }
 
     body.dark-mode .feature-card:hover {
-        /* Combined box-shadow: original shadow + glowing shadow in dark mode */
-        box-shadow: 0 6px 12px rgba(0,0,0,0.4), 0 0 0 3px rgba(255, 255, 255, 0.2), 0 0 8px rgba(255, 255, 255, 0.4) !important;
-        border-color: #FFFFFF !important; /* White border on hover in dark mode */
+        box-shadow: 0 6px 12px rgba(0,0,0,0.5),
+                    0 0 0 3px rgba(96, 165, 250, 0.3),
+                    0 0 10px rgba(96, 165, 250, 0.6) !important;
+        border-color: #60a5fa !important;
     }
 }
 
 /* Constant Glowing effect on all feature cards on smaller screens (Mobile) */
 @media (max-width: 768px) {
     .feature-card {
-        /* Apply glow constantly on mobile */
-        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2), 0 0 8px rgba(0, 123, 255, 0.4) !important;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2),
+                    0 0 8px rgba(0, 123, 255, 0.4) !important;
         border-color: #007bff !important;
     }
     body.dark-mode .feature-card {
-        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1), 0 0 8px rgba(255, 255, 255, 0.2) !important;
-        border-color: #FFFFFF !important;
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2),
+                    0 0 8px rgba(96, 165, 250, 0.4) !important;
+        border-color: #60a5fa !important;
     }
 }
 
-
 .feature-icon {
-    margin-bottom: 8px; /* Reduced margin */
-    color: #007bff; /* Icon color */
+    margin-bottom: 8px;
+    color: #007bff;
 }
 
 body.dark-mode .feature-icon {
-    color: #A8DADC; /* Accent 1 for icons in dark mode */
+    color: #60a5fa;
 }
 
 .feature-icon svg {
-    width: 32px; /* Slightly smaller icon size */
+    width: 32px;
     height: 32px;
 }
 
 h3.feature-title {
-    font-size: 1.1em; /* Made smaller */
+    font-size: 1.1em;
     font-weight: 600;
     margin-bottom: 5px;
-    color: #333; /* Dark text */
+    color: #333;
 }
 
 body.dark-mode h3.feature-title {
-    color: #E4E4E4; /* Light text for dark mode */
+    color: #f9fafb;
 }
 
 .feature-description {
-    font-size: 0.85em; /* Made smaller */
-    color: #6c757d; /* Muted text */
+    font-size: 0.85em;
+    color: #6c757d;
     line-height: 1.4;
 }
 
 body.dark-mode .feature-description {
-    color: #A8DADC; /* Accent 1 for descriptions */
+    color: #cbd5f5; /* lighter, more readable */
 }
 
-
-/* Current Date Display Styling (Removed from HTML, but keeping styles in case it's re-added) */
+/* Current Date Display Styling (if used) */
 #currentDateDisplay {
-    color: #555; /* Default color for date */
-    margin-bottom: 15px; /* Space below date */
+    color: #555;
+    margin-bottom: 15px;
     font-size: 1.1em;
     font-weight: 500;
 }
 
 body.dark-mode #currentDateDisplay {
-    color: #A8DADC; /* Accent 1 for date in dark mode */
+    color: #A8DADC;
 }
-
 
 /* Input Group for Task Input and Add Button */
 .input-group {
     display: flex;
-    gap: 10px; /* Space between input and button */
-    margin-top: 20px; /* Added margin to separate from quote/button */
+    gap: 10px;
+    margin-top: 20px;
     margin-bottom: 20px;
 }
 
 #taskInput {
-    flex-grow: 1; /* Allows input to take available space */
+    flex-grow: 1;
     padding: 12px 15px;
-    border: 1px solid #cbd5e0; /* Light border */
-    border-radius: 8px; /* Rounded corners */
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
     font-size: 1em;
-    outline: none; /* Remove default focus outline */
+    outline: none;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Glowing effect on task input on hover/focus */
 #taskInput:focus,
 #taskInput:hover {
-    border-color: #007bff !important; /* Blue border on focus/hover - Added !important */
-    /* Blue glowing effect for text area */
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25), 0 0 8px rgba(0, 123, 255, 0.5) !important; /* Added !important */
+    border-color: #007bff !important;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25),
+                0 0 8px rgba(0, 123, 255, 0.5) !important;
 }
 
 body.dark-mode #taskInput:focus,
 body.dark-mode #taskInput:hover {
-    border-color: #A8DADC !important; /* Accent 1 border on focus/hover in dark mode - Added !important */
-    /* White glowing effect for text area in dark mode */
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2), 0 0 8px rgba(255, 255, 255, 0.4) !important; /* Added !important */
+    border-color: #A8DADC !important;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2),
+                0 0 8px rgba(255, 255, 255, 0.4) !important;
 }
 
 body.dark-mode #taskInput {
-    background-color: #3A3A3A;
-    border-color: #555;
-    color: #E4E4E4;
+    background-color: #111827;
+    border-color: #4b5563;
+    color: #e5e7eb;
 }
-
 
 /* Add Task Button */
 #addTaskBtn {
-    background-color: #28a745; /* Green */
+    background-color: #28a745;
     color: white;
     padding: 12px 20px;
     border: none;
@@ -291,20 +293,20 @@ body.dark-mode #taskInput {
     cursor: pointer;
     font-size: 1em;
     transition: background-color 0.2s ease, transform 0.1s ease;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Button shadow */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 #addTaskBtn:hover {
-    background-color: #218838; /* Darker green on hover */
-    transform: translateY(-1px); /* Slight lift effect */
+    background-color: #218838;
+    transform: translateY(-1px);
 }
 
 body.dark-mode #addTaskBtn {
-    background-color: #B39CD0;
-    color: #2C2C2C;
+    background-color: #34d399;
+    color: #111827;
 }
 body.dark-mode #addTaskBtn:hover {
-    background-color: #9B82B8;
+    background-color: #22c55e;
 }
 
 /* Filter Buttons Group */
@@ -338,18 +340,17 @@ body.dark-mode #addTaskBtn:hover {
 }
 
 body.dark-mode .filter-btn {
-    background-color: #B39CD0;
-    color: #2C2C2C;
+    background-color: #4b5563;
+    color: #f9fafb;
 }
 body.dark-mode .filter-btn:hover {
-    background-color: #9B82B8;
+    background-color: #374151;
 }
 body.dark-mode .filter-btn.active {
-    background-color: #9B82B8;
+    background-color: #111827;
 }
 
-
-/* Import and Export Buttons Group */
+/* Import and Export Buttons Group (if used) */
 .import-export {
     margin-bottom: 20px;
     display: flex;
@@ -375,11 +376,11 @@ body.dark-mode .filter-btn.active {
 }
 
 body.dark-mode .import-export button {
-    background-color: #B39CD0;
-    color: #2C2C2C;
+    background-color: #4b5563;
+    color: #f9fafb;
 }
 body.dark-mode .import-export button:hover {
-    background-color: #9B82B8;
+    background-color: #374151;
 }
 
 /* Task List Styling */
@@ -397,7 +398,7 @@ body.dark-mode .import-export button:hover {
     padding: 15px;
     margin-bottom: 10px;
     display: flex;
-    flex-wrap: wrap; /* Allow items to wrap to next line */
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
@@ -405,27 +406,26 @@ body.dark-mode .import-export button:hover {
 }
 
 body.dark-mode #taskList li {
-    background-color: #3A3A3A;
-    border-color: #555;
-    color: #E4E4E4;
+    background-color: #111827;
+    border-color: #374151;
+    color: #e5e7eb;
 }
 
-#taskList li span { /* Style for the task text itself */
-    flex-grow: 1; /* Allow text to grow */
-    flex-shrink: 1; /* Allow text to shrink */
-    min-width: 100px; /* Minimum width for text before wrapping */
-    word-break: break-all; /* Break long words */
-    overflow-wrap: break-word; /* Ensure wrapping for long words */
-    margin-right: 10px; /* Space between text and buttons */
+#taskList li span {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 100px;
+    word-break: break-all;
+    overflow-wrap: break-word;
+    margin-right: 10px;
 }
 
-#taskList li .flex.space-x-2 { /* The container for Complete/Delete buttons */
-    flex-shrink: 0; /* Prevent buttons from shrinking */
+#taskList li .flex.space-x-2 {
+    flex-shrink: 0;
     display: flex;
-    gap: 5px; /* Smaller gap between buttons */
-    margin-left: auto; /* Push buttons to the right */
+    gap: 5px;
+    margin-left: auto;
 }
-
 
 #taskList li.completed span {
     text-decoration: line-through;
@@ -433,27 +433,27 @@ body.dark-mode #taskList li {
 }
 
 /* Enhanced styling for completed tasks */
-body.dark-mode #taskList li.completed {
-    background-color: #4A4A4A;
-    border-color: #7A7A7A;
-}
-body.dark-mode #taskList li.completed span {
-    color: #A8DADC;
-}
 #taskList li.completed {
     background-color: #d4edda;
     border-color: #c3e6cb;
     color: #155724;
 }
+body.dark-mode #taskList li.completed {
+    background-color: #022c22;
+    border-color: #059669;
+}
+body.dark-mode #taskList li.completed span {
+    color: #cbd5f5;
+}
+
 #taskList li.completed .complete-btn {
     background-color: #ffc107;
     color: #333;
 }
 body.dark-mode #taskList li.completed .complete-btn {
-    background-color: #FFC1CC;
-    color: #2C2C2C;
+    background-color: #facc15;
+    color: #111827;
 }
-
 
 /* Task Action Buttons (Complete/Delete) */
 #taskList li button {
@@ -462,7 +462,6 @@ body.dark-mode #taskList li.completed .complete-btn {
     border-radius: 5px;
     cursor: pointer;
     font-size: 0.85em;
-    /* Removed margin-left here as it's handled by gap in parent flex container */
     transition: background-color 0.2s ease, transform 0.1s ease;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
@@ -477,11 +476,11 @@ body.dark-mode #taskList li.completed .complete-btn {
 }
 
 body.dark-mode #taskList li .complete-btn {
-    background-color: #B39CD0;
-    color: #2C2C2C;
+    background-color: #34d399;
+    color: #111827;
 }
 body.dark-mode #taskList li.complete-btn:hover {
-    background-color: #9B82B8;
+    background-color: #22c55e;
 }
 
 #taskList li .delete-btn {
@@ -494,11 +493,11 @@ body.dark-mode #taskList li.complete-btn:hover {
 }
 
 body.dark-mode #taskList li .delete-btn {
-    background-color: #E44D5A;
-    color: #E4E4E4;
+    background-color: #ef4444;
+    color: #f9fafb;
 }
 body.dark-mode #taskList li.delete-btn:hover {
-    background-color: #C83A45;
+    background-color: #b91c1c;
 }
 
 /* Motivational Quote */
@@ -512,7 +511,7 @@ body.dark-mode #taskList li.delete-btn:hover {
 }
 
 body.dark-mode #quote {
-    color: #A8DADC;
+    color: #e5e7eb;
 }
 
 /* Footer Styling */
@@ -528,9 +527,9 @@ footer {
 }
 
 body.dark-mode footer {
-    background-color: #3A3A3A;
-    border-top-color: #555;
-    color: #E4E4E4;
+    background-color: #111827;
+    border-top-color: #374151;
+    color: #e5e7eb;
 }
 
 .footer-content {
@@ -564,7 +563,7 @@ body.dark-mode footer {
 }
 
 body.dark-mode .email-text {
-    color: #A8DADC;
+    color: #60a5fa;
 }
 
 .copy-email-btn {
@@ -585,13 +584,12 @@ body.dark-mode .email-text {
 }
 
 body.dark-mode .copy-email-btn {
-    background-color: #B39CD0;
-    color: #2C2C2C;
+    background-color: #4b5563;
+    color: #f9fafb;
 }
 body.dark-mode #copyEmailBtnFooter:hover {
-    background-color: #9B82B8;
+    background-color: #374151;
 }
-
 
 /* Message Box for Copy Email Feedback */
 #messageBox {
@@ -607,13 +605,11 @@ body.dark-mode #copyEmailBtnFooter:hover {
     z-index: 1001;
     transition: opacity 0.3s ease;
 }
-/* Message box colors for dark mode */
 body.dark-mode #messageBox {
-    background-color: #3A3A3A;
-    border-color: #555;
-    color: #E4E4E4;
+    background-color: #111827;
+    border-color: #374151;
+    color: #e5e7eb;
 }
-
 
 /* Scroll to Top Button */
 #scrollToTopBtn {
@@ -638,18 +634,17 @@ body.dark-mode #messageBox {
 }
 
 body.dark-mode #scrollToTopBtn {
-    background-color: #B39CD0;
-    color: #2C2C2C;
+    background-color: #4b5563;
+    color: #f9fafb;
 }
 body.dark-mode #scrollToTopBtn:hover {
-    background-color: #9B82B8;
+    background-color: #374151;
 }
 #scrollToTopBtn svg {
     stroke: currentColor;
     width: 24px;
     height: 24px;
 }
-
 
 /* Name Hover Effect */
 #userName {
@@ -668,7 +663,7 @@ body.dark-mode #userName.hovered {
     color: inherit;
 }
 
-/* Section Highlighting (Example, requires nav links with .section-title) */
+/* Section Highlighting */
 .section-title.active {
     font-weight: bold;
     color: #007bff;
@@ -676,8 +671,8 @@ body.dark-mode #userName.hovered {
     padding-bottom: 2px;
 }
 body.dark-mode .section-title.active {
-    color: #A8DADC;
-    border-bottom-color: #A8DADC;
+    color: #60a5fa;
+    border-bottom-color: #60a5fa;
 }
 
 /* AI Welcome Overlay Styles */
@@ -702,20 +697,20 @@ body.dark-mode .section-title.active {
     text-align: center;
     max-width: 400px;
     width: 90%;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Added box-shadow to transition */
-    /* Glowing effect for the modal itself */
-    box-shadow: 0 0 20px rgba(0, 123, 255, 0.6), 0 0 40px rgba(0, 123, 255, 0.3); /* Blue glow, scattered wide */
-    border: none; /* Ensure no border */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.6),
+                0 0 40px rgba(0, 123, 255, 0.3);
+    border: none;
 }
 body.dark-mode #welcomeModal {
-    background: #3A3A3A;
-    color: #E4E4E4;
-    /* Glowing effect for the modal itself in dark mode */
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 40px rgba(255, 255, 255, 0.2); /* White glow, scattered wide */
-    border: none; /* Ensure no border */
+    background: #111827;
+    color: #e5e7eb;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4),
+                0 0 40px rgba(255, 255, 255, 0.2);
+    border: none;
 }
 body.dark-mode #welcomeModal h2 {
-    color: #007bff;
+    color: #60a5fa;
     margin-bottom: 15px;
     font-size: 1.8em;
 }
@@ -723,7 +718,7 @@ body.dark-mode #welcomeModal p {
     margin-bottom: 20px;
     font-size: 1em;
     line-height: 1.5;
-    color: #E4E4E4;
+    color: #e5e7eb;
 }
 #userNameInput {
     width: calc(100% - 20px);
@@ -737,9 +732,9 @@ body.dark-mode #welcomeModal p {
     color: #333;
 }
 body.dark-mode #userNameInput {
-    background-color: #2C2C2C;
-    border-color: #555;
-    color: #E4E4E4;
+    background-color: #111827;
+    border-color: #4b5563;
+    color: #e5e7eb;
 }
 #welcomeModal button {
     background-color: #007bff;
@@ -757,11 +752,11 @@ body.dark-mode #userNameInput {
     transform: translateY(-1px);
 }
 body.dark-mode #welcomeModal button {
-    background-color: #B39CD0;
-    color: #2C2C2C;
+    background-color: #4b5563;
+    color: #f9fafb;
 }
 body.dark-mode #welcomeModal button:hover {
-    background-color: #9B82B8;
+    background-color: #374151;
 }
 
 #closeWelcomeBtn {
@@ -780,21 +775,20 @@ body.dark-mode #welcomeModal button:hover {
     transform: translateY(-1px);
 }
 body.dark-mode #closeWelcomeBtn {
-    background-color: #B39CD0;
-    color: #2C2C2C;
+    background-color: #4b5563;
+    color: #f9fafb;
 }
 body.dark-mode #closeWelcomeBtn:hover {
-    background-color: #9B82B8;
+    background-color: #374151;
 }
 
 /* Modal Buttons Container - Centering */
 #modalButtonsContainer {
     display: flex;
-    justify-content: center; /* Centers items horizontally */
-    gap: 10px; /* Space between buttons if multiple */
-    margin-top: 20px; /* Space above buttons */
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
 }
-
 
 /* Ensure font is applied to all elements */
 * {
@@ -803,7 +797,6 @@ body.dark-mode #closeWelcomeBtn:hover {
 
 /* Dark Mode Toggle Button Specific Styles */
 #darkModeToggle {
-    /* Basic styling for the button itself */
     background-color: #e2e8f0;
     color: #2d3748;
     border: 1px solid #cbd5e0;
@@ -821,12 +814,106 @@ body.dark-mode #closeWelcomeBtn:hover {
 }
 
 body.dark-mode #darkModeToggle {
-    background-color: #B39CD0;
-    color: #2C2C2C;
-    border-color: #9B82B8;
+    background-color: #4b5563;
+    color: #f9fafb;
+    border-color: #374151;
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 body.dark-mode #darkModeToggle:hover {
-    background-color: #9B82B8;
+    background-color: #374151;
+}
+
+/* Auth Buttons (Google login / logout) */
+.auth-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0 20px;
+}
+
+#googleLoginBtn,
+#logoutBtn {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 9999px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#googleLoginBtn:hover,
+#logoutBtn:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+body.dark-mode #googleLoginBtn,
+body.dark-mode #logoutBtn {
+    background-color: #4b5563;
+    color: #f9fafb;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+body.dark-mode #googleLoginBtn:hover,
+body.dark-mode #logoutBtn:hover {
+    background-color: #374151;
+}
+
+/* Mobile layout improvements */
+@media (max-width: 600px) {
+  .container {
+    margin: 20px auto;
+    padding: 20px 16px;
+    max-width: 100%;
+    border-radius: 0;
+  }
+
+  h1 {
+    font-size: 1.8em;
+  }
+
+  .greeting-message {
+    font-size: 1.2em;
+    margin-top: 12px;
+    margin-bottom: 16px;
+  }
+
+  .section-spacing {
+    margin-top: 24px;
+    margin-bottom: 24px;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  #taskList li {
+    padding: 12px;
+    font-size: 0.9em;
+  }
+
+  #taskList li span {
+    min-width: 0;
+  }
+
+  #scrollToTopBtn {
+    bottom: 16px;
+    right: 16px;
+    padding: 12px;
+  }
+
+  .auth-buttons {
+    flex-direction: column;
+  }
+
+  #googleLoginBtn,
+  #logoutBtn {
+    width: 100%;
+    justify-content: center;
+  }
 }

@@ -1,9 +1,38 @@
+// =========================
+// Firebase Setup (top level)
+// =========================
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDJfJ1NkJOmmsYSb7RLJPFeZR_8-tqoUgQ",
+  authDomain: "advanced-todo-b93ba.firebaseapp.com",
+  projectId: "advanced-todo-b93ba",
+  storageBucket: "advanced-todo-b93ba.firebasestorage.app",
+  messagingSenderId: "685947792786",
+  appId: "1:685947792786:web:e49cf23e4a977c4c0be54b",
+  measurementId: "G-CWBZZYCR1M"
+};
+
+// Initialize Firebase (compat)
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let currentUser = null; // Firebase user (null if logged out)
+
+// =========================
+// Main App Logic
+// =========================
+
 document.addEventListener('DOMContentLoaded', async function () {
   // --- Core To-Do List Elements ---
   const taskInput = document.getElementById('taskInput');
   const addTaskBtn = document.getElementById('addTaskBtn');
   const taskList = document.getElementById('taskList');
-  let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+  // Pehle localStorage use hota tha; ab tasks memory me rahenge,
+  // load/save Firestore se hoga.
+  let tasks = [];
 
   // --- AI Welcome / User Name Elements ---
   const welcomeOverlay = document.getElementById('welcomeOverlay');
@@ -14,7 +43,12 @@ document.addEventListener('DOMContentLoaded', async function () {
   const closeWelcomeBtn = document.getElementById('closeWelcomeBtn');
   const storedUserName = localStorage.getItem('todoUserName');
   const userNameDisplay = document.getElementById('userName');
-  const userNameFooter = document.getElementById('userNameFooter');
+  // NEW: popup ka Google button
+  const welcomeGoogleBtn = document.getElementById('welcomeGoogleBtn');
+
+  // --- Auth Buttons ---
+  const googleLoginBtn = document.getElementById('googleLoginBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
 
   // --- Misc UI Elements ---
   const messageBox = document.getElementById('messageBox');
@@ -24,7 +58,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   const emailAddressFooter = document.getElementById('emailAddressFooter');
   const copyEmailBtnFooter = document.getElementById('copyEmailBtnFooter');
 
-  // Stats bar (optional small enhancement)
+  // Stats bar
   let statsBar = document.getElementById('statsBar');
   if (!statsBar) {
     statsBar = document.createElement('div');
@@ -37,7 +71,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
   }
 
-  // --- Helper Functions ---
+  // =========================
+  // Helper Functions
+  // =========================
 
   function getTimeOfDay() {
     const hour = new Date().getHours();
@@ -74,7 +110,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     welcomeOverlay.style.display = 'flex';
 
     if (userNameDisplay) userNameDisplay.textContent = userName;
-    if (userNameFooter) userNameFooter.textContent = userName;
 
     const aiMessage = await fetchAiWelcomeMessage(userName);
     modalMessage.textContent = aiMessage;
@@ -85,12 +120,105 @@ document.addEventListener('DOMContentLoaded', async function () {
     }, 4000);
   }
 
-  // --- Welcome Logic Initial Check ---
+  // =========================
+  // Firestore: Tasks CRUD
+  // =========================
+
+  // user-specific collection reference helper
+  function getUserTodosCollection() {
+    if (!currentUser) return null;
+    return db.collection('todos').doc(currentUser.uid).collection('items');
+  }
+
+  async function loadTasksFromFirestore() {
+    if (!currentUser) {
+      tasks = [];
+      renderTasks();
+      return;
+    }
+
+    const colRef = getUserTodosCollection();
+    if (!colRef) return;
+
+    try {
+      const snapshot = await colRef.orderBy('createdAt', 'asc').get();
+      tasks = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        tasks.push({
+          id: doc.id,
+          text: data.text,
+          completed: data.completed || false
+        });
+      });
+      renderTasks();
+    } catch (err) {
+      console.error('Error loading tasks from Firestore:', err);
+      showMessage('Failed to load tasks.');
+    }
+  }
+
+  async function addTaskToFirestore(text) {
+    if (!currentUser) {
+      showMessage('Please sign in to save tasks.');
+      return;
+    }
+    const colRef = getUserTodosCollection();
+    if (!colRef) return;
+
+    try {
+      const docRef = await colRef.add({
+        text,
+        completed: false,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      tasks.push({
+        id: docRef.id,
+        text,
+        completed: false
+      });
+      renderTasks();
+    } catch (err) {
+      console.error('Error adding task:', err);
+      showMessage('Failed to add task.');
+    }
+  }
+
+  async function toggleTaskCompletionInFirestore(task) {
+    if (!currentUser || !task.id) return;
+    const colRef = getUserTodosCollection();
+    if (!colRef) return;
+
+    try {
+      await colRef.doc(task.id).update({
+        completed: !task.completed
+      });
+    } catch (err) {
+      console.error('Error updating task:', err);
+      showMessage('Failed to update task.');
+    }
+  }
+
+  async function deleteTaskFromFirestore(task) {
+    if (!currentUser || !task.id) return;
+    const colRef = getUserTodosCollection();
+    if (!colRef) return;
+
+    try {
+      await colRef.doc(task.id).delete();
+    } catch (err) {
+      console.error('Error deleting task:', err);
+      showMessage('Failed to delete task.');
+    }
+  }
+
+  // =========================
+  // Welcome Logic Initial Check (local name)
+  // =========================
 
   if (storedUserName) {
-    // Returning user
+    // Returning user (AI welcome name)
     if (userNameDisplay) userNameDisplay.textContent = storedUserName;
-    if (userNameFooter) userNameFooter.textContent = storedUserName;
     handleWelcomeFlow(storedUserName);
   } else if (welcomeOverlay) {
     // First time user experience
@@ -112,19 +240,16 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
   }
 
-  // Optional: allow closing overlay manually (if you want)
+  // Optional: allow closing overlay manually
   if (closeWelcomeBtn && welcomeOverlay) {
     closeWelcomeBtn.addEventListener('click', () => {
       welcomeOverlay.style.display = 'none';
     });
   }
 
-  // --- Tasks & LocalStorage ---
-
-  function saveTasks() {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-    updateStats();
-  }
+  // =========================
+  // Tasks (in-memory + Firestore)
+  // =========================
 
   // Filter handling
   let currentFilter = 'all';
@@ -145,10 +270,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     const filtered = getFilteredTasks();
 
-    filtered.forEach((task, indexInFiltered) => {
-      // Map filtered index to real index
-      const realIndex = tasks.indexOf(task);
-
+    filtered.forEach(task => {
       const li = document.createElement('li');
       if (task.completed) li.classList.add('completed');
 
@@ -161,19 +283,23 @@ document.addEventListener('DOMContentLoaded', async function () {
       const completeBtn = document.createElement('button');
       completeBtn.className = 'complete-btn';
       completeBtn.textContent = task.completed ? 'Undo' : 'Done';
-      completeBtn.addEventListener('click', () => {
-        tasks[realIndex].completed = !tasks[realIndex].completed;
-        saveTasks();
+      completeBtn.addEventListener('click', async () => {
+        // local state update
+        task.completed = !task.completed;
         renderTasks();
+        // Firestore update
+        await toggleTaskCompletionInFirestore(task);
       });
 
       const deleteBtn = document.createElement('button');
       deleteBtn.className = 'delete-btn';
       deleteBtn.textContent = 'Delete';
-      deleteBtn.addEventListener('click', () => {
-        tasks.splice(realIndex, 1);
-        saveTasks();
+      deleteBtn.addEventListener('click', async () => {
+        // local state update
+        tasks = tasks.filter(t => t !== task);
         renderTasks();
+        // Firestore delete
+        await deleteTaskFromFirestore(task);
       });
 
       actionsDiv.appendChild(completeBtn);
@@ -195,17 +321,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     statsBar.textContent = `Total: ${total} · Completed: ${completed} · Remaining: ${remaining}`;
   }
 
-  // --- Add Task ---
-
-  function addTask() {
+  // Add Task (now Firestore)
+  async function addTask() {
     if (!taskInput) return;
     const text = taskInput.value.trim();
     if (!text) return;
 
-    tasks.push({ text, completed: false });
+    await addTaskToFirestore(text);
     taskInput.value = '';
-    saveTasks();
-    renderTasks();
   }
 
   if (addTaskBtn) {
@@ -217,7 +340,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
   }
 
-  // --- Filter Buttons ---
+  // =========================
+  // Filter Buttons
+  // =========================
 
   const filterButtons = document.querySelectorAll('.filter-btn');
   filterButtons.forEach(btn => {
@@ -232,30 +357,37 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
   });
 
-  // Set default active filter button
   const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
   if (allBtn) allBtn.classList.add('active');
 
-  // --- Dark Mode Toggle ---
+  // =========================
+  // Dark Mode
+  // =========================
 
-  if (darkModeToggle) {
-    darkModeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('dark-mode');
-      const isDark = document.body.classList.contains('dark-mode');
-      localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
-      darkModeToggle.textContent = isDark ? 'Light Mode' : 'Dark Mode';
-    });
-
-    // Initial state from localStorage
-    if (localStorage.getItem('darkMode') === 'enabled') {
+  function applyDarkModeFromStorage() {
+    const isDark = localStorage.getItem('darkMode') === 'enabled';
+    if (isDark) {
       document.body.classList.add('dark-mode');
-      darkModeToggle.textContent = 'Light Mode';
+      if (darkModeToggle) darkModeToggle.textContent = 'Light Mode';
     } else {
-      darkModeToggle.textContent = 'Dark Mode';
+      document.body.classList.remove('dark-mode');
+      if (darkModeToggle) darkModeToggle.textContent = 'Dark Mode';
     }
   }
 
-  // --- Motivational Quote (simple local array) ---
+  applyDarkModeFromStorage();
+
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener('click', () => {
+      const isDark = document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+      darkModeToggle.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+    });
+  }
+
+  // =========================
+  // Motivational Quote
+  // =========================
 
   if (quoteEl) {
     const quotes = [
@@ -263,13 +395,25 @@ document.addEventListener('DOMContentLoaded', async function () {
       'Your future is created by what you do today, not tomorrow.',
       'Focus on being productive, not busy.',
       'Done is better than perfect.',
-      'Every task you finish is a win.'
+      'Every task you finish is a win.',
+      'Start with one small task, then another.',
+      'Every finished task is a step forward.',
+      'Five focused minutes can change your whole day.',
+      'Write it down, do it, then relax.',
+      'Tiny progress every day beats big plans someday.',
+      'Clear list, clear mind, better focus.',
+      'If it takes less than two minutes, do it now.',
+      'Your future self will thank you for this task.',
+      'One thing at a time, done well.',
+      'Today’s actions are tomorrow’s results.'
     ];
     const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
     quoteEl.textContent = randomQuote;
   }
 
-  // --- Scroll to Top Button ---
+  // =========================
+  // Scroll to Top Button
+  // =========================
 
   if (scrollToTopBtn) {
     window.addEventListener('scroll', () => {
@@ -285,7 +429,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
   }
 
-  // --- Copy Email to Clipboard + Message Box ---
+  // =========================
+  // Copy Email + Messages
+  // =========================
 
   function showMessage(text) {
     if (!messageBox) return;
@@ -316,7 +462,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
   }
 
-  // --- Name hover glow (matches CSS) ---
+  // =========================
+  // Name hover glow
+  // =========================
 
   if (userNameDisplay) {
     userNameDisplay.addEventListener('mouseenter', () => {
@@ -327,6 +475,75 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
   }
 
-  // --- Initial Render ---
+  // =========================
+  // Auth: Google Login / Logout
+  // =========================
+
+  async function signInWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    try {
+      await auth.signInWithPopup(provider); // popup yahan se chalega
+      // onAuthStateChanged listener handle karega
+    } catch (err) {
+      console.error('Google sign-in error:', err);
+      showMessage('Sign-in failed.');
+    }
+  }
+
+  async function signOutUser() {
+    try {
+      await auth.signOut();
+      // onAuthStateChanged listener handle karega
+    } catch (err) {
+      console.error('Sign-out error:', err);
+      showMessage('Sign-out failed.');
+    }
+  }
+
+  if (googleLoginBtn) {
+    googleLoginBtn.addEventListener('click', signInWithGoogle);
+  }
+
+  // NEW: popup ke Google button se bhi same login function
+  if (welcomeGoogleBtn) {
+    welcomeGoogleBtn.addEventListener('click', signInWithGoogle);
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', signOutUser);
+  }
+
+  // =========================
+  // Auth State Listener
+  // =========================
+
+  auth.onAuthStateChanged(async (user) => {
+    currentUser = user || null;
+
+    if (currentUser) {
+      // UI updates on login
+      if (googleLoginBtn) googleLoginBtn.style.display = 'none';
+      if (logoutBtn) logoutBtn.style.display = 'inline-block';
+
+      // Optionally show Firebase displayName in greeting if no local name set
+      if (!storedUserName && userNameDisplay) {
+        userNameDisplay.textContent = currentUser.displayName || 'Friend';
+      }
+
+      await loadTasksFromFirestore();
+      showMessage('Signed in successfully!');
+    } else {
+      // Logged out
+      tasks = [];
+      renderTasks();
+
+      if (googleLoginBtn) googleLoginBtn.style.display = 'inline-block';
+      if (logoutBtn) logoutBtn.style.display = 'none';
+
+      showMessage('You are signed out.');
+    }
+  });
+
+  // --- Initial Render (empty or after auth loads) ---
   renderTasks();
 });
