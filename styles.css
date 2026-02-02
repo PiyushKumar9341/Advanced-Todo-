@@ -1,107 +1,71 @@
-/* General Body and Base Styles */
+/* =========================
+   Base layout / light theme
+   ========================= */
+
 body {
-    font-family: 'Inter', sans-serif; /* Using Inter as a modern, clean font */
-    background-color: #f0f2f5; /* Light background for default mode */
+    font-family: 'Inter', sans-serif;
+    background-color: #f0f2f5;
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Ensures footer stays at bottom */
+    min-height: 100vh;
     margin: 0;
     padding: 0;
-    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for dark mode */
-    color: #333; /* Default text color */
-    overflow-x: hidden; /* Prevents horizontal scrolling caused by wide shadows */
+    transition: background-color 0.3s ease, color 0.3s ease;
+    color: #333;
+    overflow-x: hidden;
 }
 
-/* Dark Mode Styles */
-body.dark-mode {
-    background-color: #121212; /* deeper but not pure black */
-    color: #f1f5f9; /* near-white, higher contrast */
-}
-
-body.dark-mode .container {
-    background-color: #1f2933; /* dark slate gray */
-    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.12), 0 0 20px rgba(255, 255, 255, 0.06);
-}
-
-/* Default dark-mode text */
-body.dark-mode p,
-body.dark-mode li,
-body.dark-mode span {
-    color: #e5e7eb;
-}
-
-/* Main Container Styling */
 .container {
-    background-color: #ffffff; /* White background for default mode */
-    border-radius: 15px; /* Rounded corners */
+    background-color: #ffffff;
+    border-radius: 15px;
     padding: 30px;
-    margin: 50px auto; /* Center container with vertical margin */
-    max-width: 600px; /* Max width for readability */
-    width: 90%; /* Responsive width */
+    margin: 50px auto;
+    max-width: 600px;
+    width: 90%;
     text-align: center;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
-
-    /* Glowing effect for the container in light mode (blue glow) */
     box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3), 0 0 20px rgba(0, 123, 255, 0.2);
 }
 
-/* Heading Styles */
-h1 {
-    font-family: 'Orbitron', sans-serif; /* Applied new font for the title */
-    color: #007bff; /* Bright blue for heading */
-    margin-bottom: 5px; /* Reduced margin to bring quote closer */
-    font-size: 2.5em; /* Large font size */
-    font-weight: 700; /* Bold */
-    text-shadow: none; /* Removed glowing effect for title */
-}
+/* Heading */
 
-body.dark-mode h1 {
-    color: #60a5fa; /* softer bright blue */
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    color: #007bff;
+    margin-bottom: 5px;
+    font-size: 2.5em;
+    font-weight: 700;
     text-shadow: none;
 }
 
-/* Personalized Greeting Message Styling */
-.greeting-message {
-    font-family: 'Quicksand', sans-serif; /* New font for greeting */
-    font-size: 1.5em; /* Larger font size for impact */
-    font-weight: 600; /* Bold font weight */
-    color: #333; /* Default dark text for light mode */
-    margin-top: 20px; /* Space above */
-    margin-bottom: 20px; /* Space below */
-    opacity: 0; /* Hidden initially for animation */
-    transform: translateY(20px); /* Start slightly below for slide-up */
-    animation: fadeInSlideUp 0.8s ease-out forwards; /* Animation */
-}
+/* Greeting */
 
-body.dark-mode .greeting-message {
-    color: #e5e7eb;
+.greeting-message {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.5em;
+    font-weight: 600;
+    color: #333;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInSlideUp 0.8s ease-out forwards;
 }
 
 .greeting-message #userName {
-    font-weight: 700; /* Make name bold */
-    color: #0056b3; /* Darker blue for name in light mode */
-    transition: transform 0.3s ease-in-out, text-shadow 0.3s ease-in-out; /* Smooth transition for scale and glow */
+    font-weight: 700;
+    color: #0056b3;
+    transition: transform 0.3s ease-in-out, text-shadow 0.3s ease-in-out;
 }
 
-body.dark-mode .greeting-message #userName {
-    color: #A8DADC; /* Accent 1 for name in dark mode */
-}
-
-/* New Hover Effect for userName */
 .greeting-message #userName.hovered {
-    transform: scale(1.1); /* Make bigger, no tilt */
-    /* Glowing effect */
-    text-shadow: 0 0 8px rgba(0, 123, 255, 0.7), 0 0 15px rgba(0, 123, 255, 0.5); /* Blue glow */
-    color: inherit; /* Keep existing color, don't change it */
-}
-
-body.dark-mode .greeting-message #userName.hovered {
-    /* White glowing effect in dark mode */
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.7), 0 0 15px rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
+    text-shadow: 0 0 8px rgba(0, 123, 255, 0.7), 0 0 15px rgba(0, 123, 255, 0.5);
     color: inherit;
 }
 
-/* Keyframes for fade-in and slide-up animation */
+/* Animation */
+
 @keyframes fadeInSlideUp {
     from {
         opacity: 0;
@@ -113,42 +77,33 @@ body.dark-mode .greeting-message #userName.hovered {
     }
 }
 
-/* Section Headings (About This App, Key Features) */
+/* Section titles / description */
+
 h2.section-title {
-    font-size: 1.8em; /* Made smaller */
+    font-size: 1.8em;
     font-weight: 700;
-    color: #007bff; /* Consistent with h1 color */
-    margin-top: 30px; /* Space above section title */
-    margin-bottom: 15px; /* Space below section title */
-    transition: text-shadow 0.3s ease; /* Smooth transition for glow */
+    color: #007bff;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    transition: text-shadow 0.3s ease;
     text-shadow: 0 0 3px rgba(0, 123, 255, 0.2);
 }
 
-body.dark-mode h2.section-title {
-    color: #60a5fa;
-    text-shadow: 0 0 3px rgba(96, 165, 250, 0.3);
+.section-spacing {
+    margin-top: 40px;
+    margin-bottom: 40px;
 }
 
-/* Section Spacing */
-.section-spacing {
-    margin-top: 40px; /* More space between main content and sections */
-    margin-bottom: 40px; /* Space below sections */
-}
 .section-description {
-    font-size: 0.95em; /* Made smaller */
+    font-size: 0.95em;
     line-height: 1.6;
     margin-bottom: 20px;
-    padding: 0 15px; /* Some horizontal padding */
+    padding: 0 15px;
 }
 
-/* OLD features grid (no longer used, but kept if needed)
-.features-grid { ... }
-.feature-card { ... }
-... */
-
-/* ===========================
-   NEW: Features list styling
-   =========================== */
+/* =========================
+   Features list (new layout)
+   ========================= */
 
 .features-list {
     margin-top: 20px;
@@ -168,7 +123,8 @@ body.dark-mode h2.section-title {
     border: 1px solid #e2e6ea;
     box-shadow: 0 2px 4px rgba(0,0,0,0.04);
     text-align: left;
-    transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+    transition: transform 0.15s ease, box-shadow 0.2s ease,
+                border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .feature-main {
@@ -220,7 +176,8 @@ h3.feature-title {
     border: 1px solid rgba(0,123,255,0.2);
 }
 
-/* Hover states */
+/* Hover (desktop) */
+
 @media (min-width: 769px) {
     .feature-row:hover {
         transform: translateY(-2px);
@@ -230,37 +187,8 @@ h3.feature-title {
     }
 }
 
-/* Dark mode for new features list */
-body.dark-mode .feature-row {
-    background-color: #111827;
-    border-color: #374151;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-}
+/* Responsive features */
 
-body.dark-mode .feature-row:hover {
-    background-color: #020617;
-    border-color: #60a5fa;
-}
-
-body.dark-mode .feature-icon {
-    color: #60a5fa;
-}
-
-body.dark-mode h3.feature-title {
-    color: #f9fafb;
-}
-
-body.dark-mode .feature-description {
-    color: #cbd5f5;
-}
-
-body.dark-mode .feature-tag {
-    background-color: rgba(37, 99, 235, 0.25);
-    color: #bfdbfe;
-    border-color: rgba(59,130,246,0.5);
-}
-
-/* Responsive tweaks for features list */
 @media (max-width: 600px) {
     .feature-row {
         flex-direction: column;
@@ -271,19 +199,19 @@ body.dark-mode .feature-tag {
     }
 }
 
-/* Current Date Display Styling (if used) */
-#currentDateDisplay {
-    color: #555;
-    margin-bottom: 15px;
-    font-size: 1.1em;
-    font-weight: 500;
+/* Section active underline (if used) */
+
+.section-title.active {
+    font-weight: bold;
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 2px;
 }
 
-body.dark-mode #currentDateDisplay {
-    color: #A8DADC;
-}
+/* =========================
+   Task input / buttons
+   ========================= */
 
-/* Input Group for Task Input and Add Button */
 .input-group {
     display: flex;
     gap: 10px;
@@ -301,7 +229,6 @@ body.dark-mode #currentDateDisplay {
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Glowing effect on task input on hover/focus */
 #taskInput:focus,
 #taskInput:hover {
     border-color: #007bff !important;
@@ -309,20 +236,8 @@ body.dark-mode #currentDateDisplay {
                 0 0 8px rgba(0, 123, 255, 0.5) !important;
 }
 
-body.dark-mode #taskInput:focus,
-body.dark-mode #taskInput:hover {
-    border-color: #A8DADC !important;
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2),
-                0 0 8px rgba(255, 255, 255, 0.4) !important;
-}
+/* Add Task */
 
-body.dark-mode #taskInput {
-    background-color: #111827;
-    border-color: #4b5563;
-    color: #e5e7eb;
-}
-
-/* Add Task Button */
 #addTaskBtn {
     background-color: #28a745;
     color: white;
@@ -340,20 +255,10 @@ body.dark-mode #taskInput {
     transform: translateY(-1px);
 }
 
-body.dark-mode #addTaskBtn {
-    background-color: #34d399;
-    color: #111827;
-}
-body.dark-mode #addTaskBtn:hover {
-    background-color: #22c55e;
-}
-
-/* ===========================
-   NEW: Clear button styling
-   =========================== */
+/* Clear all */
 
 #clearAllBtn {
-    background-color: #f97316; /* orange */
+    background-color: #f97316;
     color: #ffffff;
     padding: 12px 16px;
     border: none;
@@ -377,17 +282,8 @@ body.dark-mode #addTaskBtn:hover {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-body.dark-mode #clearAllBtn {
-    background-color: #f97316;
-    color: #111827;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-}
+/* Filters */
 
-body.dark-mode #clearAllBtn:hover {
-    background-color: #fb923c;
-}
-
-/* Filter Buttons Group */
 .filter {
     margin-bottom: 20px;
     display: flex;
@@ -417,51 +313,10 @@ body.dark-mode #clearAllBtn:hover {
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
 }
 
-body.dark-mode .filter-btn {
-    background-color: #4b5563;
-    color: #f9fafb;
-}
-body.dark-mode .filter-btn:hover {
-    background-color: #374151;
-}
-body.dark-mode .filter-btn.active {
-    background-color: #111827;
-}
+/* =========================
+   Task list
+   ========================= */
 
-/* Import and Export Buttons Group (if used) */
-.import-export {
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-.import-export button {
-    background-color: #17a2b8;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9em;
-    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.import-export button:hover {
-    background-color: #138496;
-    transform: translateY(-1px);
-}
-
-body.dark-mode .import-export button {
-    background-color: #4b5563;
-    color: #f9fafb;
-}
-body.dark-mode .import-export button:hover {
-    background-color: #374151;
-}
-
-/* Task List Styling */
 #taskList {
     list-style: none;
     padding: 0;
@@ -481,12 +336,6 @@ body.dark-mode .import-export button:hover {
     align-items: center;
     transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-
-body.dark-mode #taskList li {
-    background-color: #111827;
-    border-color: #374151;
-    color: #e5e7eb;
 }
 
 #taskList li span {
@@ -510,30 +359,21 @@ body.dark-mode #taskList li {
     color: #6c757d;
 }
 
-/* Enhanced styling for completed tasks */
+/* Completed styling */
+
 #taskList li.completed {
     background-color: #d4edda;
     border-color: #c3e6cb;
     color: #155724;
-}
-body.dark-mode #taskList li.completed {
-    background-color: #022c22;
-    border-color: #059669;
-}
-body.dark-mode #taskList li.completed span {
-    color: #cbd5f5;
 }
 
 #taskList li.completed .complete-btn {
     background-color: #ffc107;
     color: #333;
 }
-body.dark-mode #taskList li.completed .complete-btn {
-    background-color: #facc15;
-    color: #111827;
-}
 
-/* Task Action Buttons (Complete/Delete) */
+/* Task buttons */
+
 #taskList li button {
     padding: 8px 12px;
     border: none;
@@ -548,37 +388,26 @@ body.dark-mode #taskList li.completed .complete-btn {
     background-color: #28a745;
     color: white;
 }
+
 #taskList li .complete-btn:hover {
     background-color: #218838;
     transform: translateY(-0.5px);
-}
-
-body.dark-mode #taskList li .complete-btn {
-    background-color: #34d399;
-    color: #111827;
-}
-body.dark-mode #taskList li.complete-btn:hover {
-    background-color: #22c55e;
 }
 
 #taskList li .delete-btn {
     background-color: #dc3545;
     color: white;
 }
+
 #taskList li .delete-btn:hover {
     background-color: #c82333;
     transform: translateY(-0.5px);
 }
 
-body.dark-mode #taskList li .delete-btn {
-    background-color: #ef4444;
-    color: #f9fafb;
-}
-body.dark-mode #taskList li.delete-btn:hover {
-    background-color: #b91c1c;
-}
+/* =========================
+   Quote
+   ========================= */
 
-/* Motivational Quote */
 #quote {
     font-style: italic;
     color: #555;
@@ -588,11 +417,10 @@ body.dark-mode #taskList li.delete-btn:hover {
     padding: 0 10px;
 }
 
-body.dark-mode #quote {
-    color: #e5e7eb;
-}
+/* =========================
+   Footer
+   ========================= */
 
-/* Footer Styling */
 footer {
     margin-top: auto;
     padding: 20px;
@@ -602,12 +430,6 @@ footer {
     background-color: #f8f9fa;
     border-top: 1px solid #e2e6ea;
     transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-}
-
-body.dark-mode footer {
-    background-color: #111827;
-    border-top-color: #374151;
-    color: #e5e7eb;
 }
 
 .footer-content {
@@ -640,10 +462,6 @@ body.dark-mode footer {
     text-decoration: underline;
 }
 
-body.dark-mode .email-text {
-    color: #60a5fa;
-}
-
 .copy-email-btn {
     background-color: #6c757d;
     color: white;
@@ -661,15 +479,10 @@ body.dark-mode .email-text {
     transform: translateY(-1px);
 }
 
-body.dark-mode .copy-email-btn {
-    background-color: #4b5563;
-    color: #f9fafb;
-}
-body.dark-mode #copyEmailBtnFooter:hover {
-    background-color: #374151;
-}
+/* =========================
+   Message box
+   ========================= */
 
-/* Message Box for Copy Email Feedback */
 #messageBox {
     display: none;
     position: fixed;
@@ -683,13 +496,11 @@ body.dark-mode #copyEmailBtnFooter:hover {
     z-index: 1001;
     transition: opacity 0.3s ease;
 }
-body.dark-mode #messageBox {
-    background-color: #111827;
-    border-color: #374151;
-    color: #e5e7eb;
-}
 
-/* Scroll to Top Button */
+/* =========================
+   Scroll to top
+   ========================= */
+
 #scrollToTopBtn {
     display: none;
     position: fixed;
@@ -706,54 +517,32 @@ body.dark-mode #messageBox {
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
 #scrollToTopBtn:hover {
     background-color: #0056b3;
     transform: translateY(-2px);
 }
 
-body.dark-mode #scrollToTopBtn {
-    background-color: #4b5563;
-    color: #f9fafb;
-}
-body.dark-mode #scrollToTopBtn:hover {
-    background-color: #374151;
-}
 #scrollToTopBtn svg {
     stroke: currentColor;
     width: 24px;
     height: 24px;
 }
 
-/* Name Hover Effect */
+/* =========================
+   Name hover
+   ========================= */
+
 #userName {
     transition: transform 0.3s ease-in-out, text-shadow 0.3s ease-in-out;
     display: inline-block;
     cursor: pointer;
 }
-#userName.hovered {
-    transform: scale(1.1);
-    text-shadow: 0 0 8px rgba(0, 123, 255, 0.7), 0 0 15px rgba(0, 123, 255, 0.5);
-    color: inherit;
-}
 
-body.dark-mode #userName.hovered {
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.7), 0 0 15px rgba(255, 255, 255, 0.5);
-    color: inherit;
-}
+/* =========================
+   Welcome overlay / modal
+   ========================= */
 
-/* Section Highlighting */
-.section-title.active {
-    font-weight: bold;
-    color: #007bff;
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 2px;
-}
-body.dark-mode .section-title.active {
-    color: #60a5fa;
-    border-bottom-color: #60a5fa;
-}
-
-/* AI Welcome Overlay Styles */
 #welcomeOverlay {
     position: fixed;
     top: 0;
@@ -768,6 +557,7 @@ body.dark-mode .section-title.active {
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
 }
+
 #welcomeModal {
     background: #ffffff;
     padding: 30px;
@@ -780,24 +570,7 @@ body.dark-mode .section-title.active {
                 0 0 40px rgba(0, 123, 255, 0.3);
     border: none;
 }
-body.dark-mode #welcomeModal {
-    background: #111827;
-    color: #e5e7eb;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4),
-                0 0 40px rgba(255, 255, 255, 0.2);
-    border: none;
-}
-body.dark-mode #welcomeModal h2 {
-    color: #60a5fa;
-    margin-bottom: 15px;
-    font-size: 1.8em;
-}
-body.dark-mode #welcomeModal p {
-    margin-bottom: 20px;
-    font-size: 1em;
-    line-height: 1.5;
-    color: #e5e7eb;
-}
+
 #userNameInput {
     width: calc(100% - 20px);
     padding: 10px;
@@ -809,11 +582,7 @@ body.dark-mode #welcomeModal p {
     text-align: center;
     color: #333;
 }
-body.dark-mode #userNameInput {
-    background-color: #111827;
-    border-color: #4b5563;
-    color: #e5e7eb;
-}
+
 #welcomeModal button {
     background-color: #007bff;
     color: white;
@@ -825,42 +594,23 @@ body.dark-mode #userNameInput {
     transition: background-color 0.2s ease, transform 0.1s ease;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
 #welcomeModal button:hover {
     background-color: #0056b3;
     transform: translateY(-1px);
-}
-body.dark-mode #welcomeModal button {
-    background-color: #4b5563;
-    color: #f9fafb;
-}
-body.dark-mode #welcomeModal button:hover {
-    background-color: #374151;
 }
 
 #closeWelcomeBtn {
     background-color: #6c757d;
     color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-#closeWelcomeBtn:hover {
-    background-color: #5a6268;
-    transform: translateY(-1px);
-}
-body.dark-mode #closeWelcomeBtn {
-    background-color: #4b5563;
-    color: #f9fafb;
-}
-body.dark-mode #closeWelcomeBtn:hover {
-    background-color: #374151;
 }
 
-/* Modal Buttons Container - Centering */
+#closeWelcomeBtn:hover {
+    background-color: #5a6268;
+}
+
+/* Modal buttons container */
+
 #modalButtonsContainer {
     display: flex;
     justify-content: center;
@@ -868,12 +618,10 @@ body.dark-mode #closeWelcomeBtn:hover {
     margin-top: 20px;
 }
 
-/* Ensure font is applied to all elements */
-* {
-    font-family: 'Inter', sans-serif;
-}
+/* =========================
+   Dark mode toggle / auth
+   ========================= */
 
-/* Dark Mode Toggle Button Specific Styles */
 #darkModeToggle {
     background-color: #e2e8f0;
     color: #2d3748;
@@ -891,18 +639,6 @@ body.dark-mode #closeWelcomeBtn:hover {
     background-color: #cbd5e0;
 }
 
-body.dark-mode #darkModeToggle {
-    background-color: #4b5563;
-    color: #f9fafb;
-    border-color: #374151;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-body.dark-mode #darkModeToggle:hover {
-    background-color: #374151;
-}
-
-/* Auth Buttons (Google login / logout) */
 .auth-buttons {
     display: flex;
     justify-content: center;
@@ -929,19 +665,289 @@ body.dark-mode #darkModeToggle:hover {
     transform: translateY(-1px);
 }
 
+/* =========================
+   Stats bar (inserted via JS)
+   ========================= */
+
+#statsBar {
+    margin: 10px 0 15px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+/* =========================
+   Dark mode (pure black + white glow)
+   ========================= */
+
+body.dark-mode {
+    background-color: #000000;
+    color: #e5e7eb;
+}
+
+body.dark-mode .container {
+    background-color: #02010a;
+    box-shadow:
+      0 0 40px rgba(255, 255, 255, 0.08),
+      0 0 80px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode h1 {
+    color: #22d3ee;
+}
+
+body.dark-mode h2.section-title {
+    color: #38bdf8;
+    text-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+}
+
+body.dark-mode p,
+body.dark-mode li,
+body.dark-mode span {
+    color: #e5e7eb;
+}
+
+/* stats visible in dark */
+
+body.dark-mode #statsBar {
+    color: #e5e7eb;
+}
+
+/* dark quote */
+
+body.dark-mode #quote {
+    color: #cbd5f5;
+}
+
+/* features dark */
+
+body.dark-mode .feature-row {
+    background-color: #020617;
+    border-color: #111827;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.85);
+}
+
+body.dark-mode .feature-row:hover {
+    background-color: #020617;
+    border-color: #22d3ee;
+}
+
+body.dark-mode .feature-icon {
+    color: #22d3ee;
+}
+
+body.dark-mode h3.feature-title {
+    color: #f9fafb;
+}
+
+body.dark-mode .feature-description {
+    color: #cbd5f5;
+}
+
+body.dark-mode .feature-tag {
+    background-color: rgba(45, 212, 191, 0.16);
+    color: #a5f3fc;
+    border-color: rgba(34, 211, 238, 0.7);
+}
+
+/* inputs / buttons dark */
+
+body.dark-mode #taskInput {
+    background-color: #020617;
+    border-color: #1f2937;
+    color: #e5e7eb;
+}
+
+body.dark-mode #taskInput:focus,
+body.dark-mode #taskInput:hover {
+    border-color: #22d3ee !important;
+    box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.6),
+                0 0 14px rgba(34, 211, 238, 0.9) !important;
+}
+
+body.dark-mode #addTaskBtn {
+    background-color: #22c55e;
+    color: #022c22;
+}
+
+body.dark-mode #addTaskBtn:hover {
+    background-color: #16a34a;
+}
+
+body.dark-mode #clearAllBtn {
+    background-color: #f97316;
+    color: #111827;
+}
+
+body.dark-mode #clearAllBtn:hover {
+    background-color: #fb923c;
+}
+
+/* filters dark */
+
+body.dark-mode .filter-btn {
+    background-color: #020617;
+    color: #e5e7eb;
+    border: 1px solid #111827;
+}
+
+body.dark-mode .filter-btn:hover {
+    background-color: #020617;
+    border-color: #22d3ee;
+}
+
+body.dark-mode .filter-btn.active {
+    background-color: #22d3ee;
+    color: #020617;
+}
+
+/* task list dark */
+
+body.dark-mode #taskList li {
+    background-color: #020617;
+    border-color: #111827;
+    color: #e5e7eb;
+}
+
+body.dark-mode #taskList li.completed {
+    background-color: #022c22;
+    border-color: #16a34a;
+}
+
+body.dark-mode #taskList li.completed span {
+    color: #bbf7d0;
+}
+
+body.dark-mode #taskList li .complete-btn {
+    background-color: #22c55e;
+    color: #022c22;
+}
+
+body.dark-mode #taskList li .delete-btn {
+    background-color: #f97373;
+    color: #111827;
+}
+
+/* footer / email dark */
+
+body.dark-mode footer {
+    background-color: #000000;
+    border-top-color: #111827;
+    color: #e5e7eb;
+}
+
+body.dark-mode .email-text {
+    color: #38bdf8;
+}
+
+/* scroll button dark */
+
+body.dark-mode #scrollToTopBtn {
+    background-color: #020617;
+    color: #e5e7eb;
+}
+
+body.dark-mode #scrollToTopBtn:hover {
+    border: 1px solid #22d3ee;
+}
+
+/* message box dark */
+
+body.dark-mode #messageBox {
+    background-color: #020617;
+    border-color: #111827;
+    color: #e5e7eb;
+}
+
+/* welcome modal dark */
+
+body.dark-mode #welcomeModal {
+    background: #020617;
+    color: #e5e7eb;
+    box-shadow: 0 0 30px rgba(34, 211, 238, 0.7);
+}
+
+body.dark-mode #userNameInput {
+    background-color: #020617;
+    border-color: #1f2937;
+    color: #e5e7eb;
+}
+
+body.dark-mode #welcomeModal button {
+    background-color: #020617;
+    color: #e5e7eb;
+    border: 1px solid #111827;
+}
+
+body.dark-mode #welcomeModal button:hover {
+    border-color: #22d3ee;
+}
+
+/* dark mode toggle / auth */
+
+body.dark-mode #darkModeToggle {
+    background-color: #020617;
+    color: #e5e7eb;
+    border: 1px solid #111827;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+body.dark-mode #darkModeToggle:hover {
+    background-color: #020617;
+    border-color: #22d3ee;
+}
+
 body.dark-mode #googleLoginBtn,
 body.dark-mode #logoutBtn {
-    background-color: #4b5563;
-    color: #f9fafb;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    background-color: #020617;
+    color: #e5e7eb;
+    border: 1px solid #111827;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 body.dark-mode #googleLoginBtn:hover,
 body.dark-mode #logoutBtn:hover {
-    background-color: #374151;
+    border-color: #22d3ee;
 }
 
-/* Mobile layout improvements */
+/* footer buttons dark */
+
+body.dark-mode .copy-email-btn {
+    background-color: #020617;
+    color: #e5e7eb;
+    border: 1px solid #111827;
+}
+
+body.dark-mode .copy-email-btn:hover {
+    border-color: #22d3ee;
+}
+
+/* global dark glow on buttons */
+
+body.dark-mode button,
+body.dark-mode #addTaskBtn,
+body.dark-mode #clearAllBtn,
+body.dark-mode .filter-btn,
+body.dark-mode #googleLoginBtn,
+body.dark-mode #logoutBtn,
+body.dark-mode .copy-email-btn {
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.18);
+}
+
+body.dark-mode button:hover,
+body.dark-mode #addTaskBtn:hover,
+body.dark-mode #clearAllBtn:hover,
+body.dark-mode .filter-btn:hover,
+body.dark-mode #googleLoginBtn:hover,
+body.dark-mode #logoutBtn:hover,
+body.dark-mode .copy-email-btn:hover {
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.28);
+}
+
+/* =========================
+   Mobile tweaks
+   ========================= */
+
 @media (max-width: 600px) {
   .container {
     margin: 20px auto;
@@ -990,8 +996,13 @@ body.dark-mode #logoutBtn:hover {
     justify-content: center;
   }
 
-  /* features list mobile tweak */
   .features-list {
     gap: 10px;
   }
+}
+
+/* Ensure global font */
+
+* {
+    font-family: 'Inter', sans-serif;
 }
