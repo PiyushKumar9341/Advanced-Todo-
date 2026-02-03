@@ -161,21 +161,29 @@ if (submitNameBtn) {
       return;
     }
 
-    // Naam store + outer greeting update
+    // 1) Naam store + outer greeting update
     saveLocalName(name);
     updateGreeting(name);
 
-    // Button label change
+    // 2) Popup ke paragraph me AI-style line dikhao
+    if (welcomeDescription) {
+      welcomeDescription.textContent = getPopupAiMessage(name);
+    }
+
+    // 3) Button label change
     submitNameBtn.textContent = 'Nice, let’s go!';
 
-    // Zyada time ke लिए popup dikhana (e.g. 2500ms)
+    // 4) Thoda time user ko padne do, fir popup band + reset
     setTimeout(() => {
       closeWelcomeModal();
       submitNameBtn.textContent = "Let's Go";
-    }, 2500); // yaha duration adjust karo (ms me)
+      if (welcomeDescription) {
+        welcomeDescription.textContent =
+          'Tell me your name so I can personalize your Advanced TODO.';
+      }
+    }, 2500);
   });
 }
-
 
 // =========================
 // Firestore helpers (per user)
