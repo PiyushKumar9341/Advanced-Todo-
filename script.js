@@ -2,7 +2,6 @@
 // Firebase Setup (compat)
 // =========================
 
-// v9 modular snippet ko compat style me convert kiya hai
 const firebaseConfig = {
   apiKey: "AIzaSyDJfJ1NkJOmmsYSb7RLJPFeZR_8-tqoUgQ",
   authDomain: "advanced-todo-b93ba.firebaseapp.com",
@@ -59,7 +58,7 @@ let currentUser   = null;
 let tasks         = [];
 
 // =========================
-// Helpers (messages + greeting)
+// Helpers (messages + greeting + name)
 // =========================
 
 function showMessage(text, type = 'info') {
@@ -381,7 +380,7 @@ if (copyEmailBtnFooter && emailAddressFooter) {
 }
 
 // =========================
-// Welcome Modal
+// Welcome Modal (AI welcome)
 // =========================
 
 function openWelcomeModal() {
@@ -394,6 +393,7 @@ function closeWelcomeModal() {
   welcomeOverlay.style.display = 'none';
 }
 
+// "Let's Go!" – sirf naam, Google se link nahi
 if (submitNameBtn) {
   submitNameBtn.addEventListener('click', () => {
     const name = userNameInput.value.trim();
@@ -413,6 +413,7 @@ if (closeWelcomeBtn) {
   });
 }
 
+// Popup ke andar Google button → main Google button trigger
 if (welcomeGoogleBtn) {
   welcomeGoogleBtn.addEventListener('click', async () => {
     if (googleLoginBtn) googleLoginBtn.click();
@@ -420,7 +421,7 @@ if (welcomeGoogleBtn) {
 }
 
 // =========================
-// Google Auth
+// Google Auth (sirf sync)
 // =========================
 
 const provider = new firebase.auth.GoogleAuthProvider();
@@ -428,9 +429,9 @@ const provider = new firebase.auth.GoogleAuthProvider();
 if (googleLoginBtn) {
   googleLoginBtn.addEventListener('click', async () => {
     try {
-      const result = await auth.signInWithPopup(provider);  // compat style
-      console.log('Signed in as:', result.user && result.user.displayName);
-      // UI update onAuthStateChanged me hoga
+      const result = await auth.signInWithPopup(provider);
+      console.log('Signed in as:', result.user && result.user.email);
+      // Naam humesha local storage (popup) se aayega
     } catch (err) {
       console.error('Google sign-in error:', err.code, err.message);
       showMessage('Google sign-in failed.', 'error');
@@ -448,7 +449,7 @@ if (logoutBtn) {
       renderTasks();
 
       clearLocalName();
-      updateGreeting('');   // logout pe greeting clear
+      updateGreeting('');
 
       if (googleLoginBtn) googleLoginBtn.style.display = 'inline-block';
       if (logoutBtn)      logoutBtn.style.display = 'none';
@@ -468,26 +469,20 @@ if (logoutBtn) {
 auth.onAuthStateChanged(async (user) => {
   currentUser = user;
 
-  console.log('Auth state user:', user && user.displayName);
-
   if (user) {
-    // Logged in
     if (googleLoginBtn) googleLoginBtn.style.display = 'none';
     if (logoutBtn)      logoutBtn.style.display = 'inline-block';
 
-    let displayName = user.displayName;
-    if (!displayName) displayName = getLocalName();
-
-    if (displayName) {
-      saveLocalName(displayName);
-      updateGreeting(displayName);
+    const savedName = getLocalName();
+    if (savedName) {
+      updateGreeting(savedName);
     } else {
       updateGreeting('');
+      openWelcomeModal();   // logged-in but no name yet
     }
 
     await loadTasksForUser(user.uid);
   } else {
-    // Logged out
     if (googleLoginBtn) googleLoginBtn.style.display = 'inline-block';
     if (logoutBtn)      logoutBtn.style.display = 'none';
 
@@ -509,6 +504,7 @@ window.addEventListener('load', () => {
     updateGreeting(savedName);
   } else {
     updateGreeting('');
+    openWelcomeModal();   // first visit / no name → AI welcome
   }
   renderTasks();
 });
