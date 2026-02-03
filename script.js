@@ -99,27 +99,7 @@ function clearLocalName() {
   localStorage.removeItem('userName');
 }
 
-// Time‑based AI style message (outer greeting)
-function getAiWelcomeMessage(name) {
-  const now  = new Date();
-  const hour = now.getHours();
-
-  let timeGreeting = 'Hey';
-  if (hour >= 5 && hour < 12) {
-    timeGreeting = 'Good morning';
-  } else if (hour >= 12 && hour < 17) {
-    timeGreeting = 'Good afternoon';
-  } else if (hour >= 17 && hour < 22) {
-    timeGreeting = 'Good evening';
-  } else {
-    timeGreeting = 'Burning the midnight oil';
-  }
-
-  const cleanName = name && name.trim() ? name.trim() : 'there';
-  return `${timeGreeting}, ${cleanName}. Let’s win one small task today.`;
-}
-
-// AI message for popup card
+// AI message for popup card (only inside modal)
 function getPopupAiMessage(name) {
   const now  = new Date();
   const hour = now.getHours();
@@ -139,20 +119,17 @@ function getPopupAiMessage(name) {
   return `${cleanName}, ${line}`;
 }
 
+// Card greeting: sirf "Hello.. name🚀"
 function updateGreeting(name) {
   const greetingEl = document.getElementById('personalizedGreeting');
   const nameEl     = document.getElementById('userName');
   if (!greetingEl || !nameEl) return;
 
   if (name && name.trim() !== '') {
-    const aiMessage = getAiWelcomeMessage(name);
-
-    // Reset p content and append span again
-    greetingEl.textContent = aiMessage + ' ';
+    greetingEl.textContent = 'Hello.. ';
     nameEl.textContent = name;
     greetingEl.appendChild(nameEl);
     greetingEl.innerHTML += '🚀';
-
     greetingEl.style.display = 'block';
   } else {
     nameEl.textContent = '';
@@ -193,7 +170,7 @@ if (submitNameBtn) {
       popupText.textContent = getPopupAiMessage(name);
     }
 
-    // 3) Button label ko change karo (nice touch)
+    // 3) Button label change
     submitNameBtn.textContent = 'Nice, let’s go!';
 
     // 4) Thoda time user ko padne do, fir popup band + reset
