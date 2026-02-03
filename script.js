@@ -42,7 +42,6 @@ const welcomeOverlay       = document.getElementById('welcomeOverlay');
 const welcomeModal         = document.getElementById('welcomeModal');
 const userNameInput        = document.getElementById('userNameInput');
 const submitNameBtn        = document.getElementById('submitNameBtn');
-const welcomeDescription   = document.getElementById('welcomeDescription');
 
 const emailAddressFooter   = document.getElementById('emailAddressFooter');
 const copyEmailBtnFooter   = document.getElementById('copyEmailBtnFooter');
@@ -100,7 +99,7 @@ function clearLocalName() {
   localStorage.removeItem('userName');
 }
 
-// AI message for popup card (only inside modal)
+// AI message for popup heading
 function getPopupAiMessage(name) {
   const now  = new Date();
   const hour = now.getHours();
@@ -152,7 +151,7 @@ function closeWelcomeModal() {
   welcomeOverlay.style.display = 'none';
 }
 
-// "Let's Go" + AI message inside popup
+// "Let's Go" + AI message on heading
 if (submitNameBtn) {
   submitNameBtn.addEventListener('click', () => {
     const name = userNameInput.value.trim();
@@ -165,23 +164,27 @@ if (submitNameBtn) {
     saveLocalName(name);
     updateGreeting(name);
 
-    // 2) Popup ke paragraph me AI-style line dikhao
-    if (welcomeDescription) {
-      welcomeDescription.textContent = getPopupAiMessage(name);
+    // 2) Popup ke heading ko AI-style message bana do
+    const heading = welcomeModal
+      ? welcomeModal.querySelector('h2')
+      : null;
+
+    if (heading) {
+      heading.textContent = getPopupAiMessage(name);
     }
 
     // 3) Button label change
     submitNameBtn.textContent = 'Nice, let’s go!';
 
-    // 4) Thoda time user ko padne do, fir popup band + reset
+    // 4) Zyada duration (e.g. 3000 ms) ke baad popup band + reset
     setTimeout(() => {
       closeWelcomeModal();
-      submitNameBtn.textContent = "Let's Go";
-      if (welcomeDescription) {
-        welcomeDescription.textContent =
-          'Tell me your name so I can personalize your Advanced TODO.';
+
+      if (heading) {
+        heading.textContent = 'What should I call you?';
       }
-    }, 2500);
+      submitNameBtn.textContent = "Let's Go";
+    }, 3000); // duration yaha adjust kar sakte ho
   });
 }
 
