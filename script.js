@@ -64,7 +64,6 @@ function showMessage(text, type = 'info') {
   if (!messageBox) return;
   messageBox.textContent = text;
   messageBox.style.display = 'block';
-  messageBox.style.opacity = '1';
 
   if (type === 'error') {
     messageBox.style.backgroundColor = '#fee2e2';
@@ -74,11 +73,15 @@ function showMessage(text, type = 'info') {
     messageBox.style.color = '#065f46';
   }
 
+  requestAnimationFrame(() => {
+    messageBox.style.opacity = '1';
+  });
+
   setTimeout(() => {
     messageBox.style.opacity = '0';
     setTimeout(() => {
       messageBox.style.display = 'none';
-    }, 300);
+    }, 250);
   }, 2000);
 }
 
@@ -126,16 +129,15 @@ function updateGreeting(name) {
   if (!greetingEl || !nameEl) return;
 
   if (name && name.trim() !== '') {
-    greetingEl.textContent = 'Hello.. ';
+    // HTML me jo text hai usko mat chhedo, sirf name set karo
     nameEl.textContent = name;
-    greetingEl.appendChild(nameEl);
-    greetingEl.innerHTML += '🚀';
     greetingEl.style.display = 'block';
   } else {
     nameEl.textContent = '';
     greetingEl.style.display = 'none';
   }
 }
+
 
 // =========================
 // AI Welcome modal
@@ -144,11 +146,17 @@ function updateGreeting(name) {
 function openWelcomeModal() {
   if (!welcomeOverlay) return;
   welcomeOverlay.style.display = 'flex';
+  requestAnimationFrame(() => {
+    welcomeOverlay.classList.add('show');
+  });
 }
 
 function closeWelcomeModal() {
   if (!welcomeOverlay) return;
-  welcomeOverlay.style.display = 'none';
+  welcomeOverlay.classList.remove('show');
+  setTimeout(() => {
+    welcomeOverlay.style.display = 'none';
+  }, 300);
 }
 
 // "Let's Go" + AI message on heading
@@ -160,11 +168,11 @@ if (submitNameBtn) {
       return;
     }
 
-    // 1) Naam store + outer greeting update
+    // Naam store + outer greeting update
     saveLocalName(name);
     updateGreeting(name);
 
-    // 2) Popup ke heading ko AI-style message bana do
+    // Popup heading ko AI-style message banao
     const heading = welcomeModal
       ? welcomeModal.querySelector('h2')
       : null;
@@ -173,10 +181,9 @@ if (submitNameBtn) {
       heading.textContent = getPopupAiMessage(name);
     }
 
-    // 3) Button label change
     submitNameBtn.textContent = 'Nice, let’s go!';
 
-    // 4) Zyada duration (e.g. 3000 ms) ke baad popup band + reset
+    // 3s ke baad close + reset
     setTimeout(() => {
       closeWelcomeModal();
 
@@ -184,7 +191,7 @@ if (submitNameBtn) {
         heading.textContent = 'What should I call you?';
       }
       submitNameBtn.textContent = "Let's Go";
-    }, 3000); // duration yaha adjust kar sakte ho
+    }, 3000);
   });
 }
 
@@ -414,8 +421,8 @@ if (darkModeToggle) {
 
 window.addEventListener('scroll', () => {
   if (!scrollToTopBtn) return;
-  scrollToTopBtn.style.display =
-    document.documentElement.scrollTop > 200 ? 'block' : 'none';
+  const show = document.documentElement.scrollTop > 200;
+  scrollToTopBtn.classList.toggle('show', show);
 });
 
 if (scrollToTopBtn) {
@@ -514,6 +521,19 @@ if (logoutBtn) {
     }
   });
 }
+
+// Enter press on name input should trigger "Let's Go"
+if (userNameInput) {
+  userNameInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();          // default submit ya refresh mat hone do
+      if (submitNameBtn) {
+        submitNameBtn.click();         // same flow as manual click
+      }
+    }
+  });
+}
+
 
 // =========================
 // Auth State Observer

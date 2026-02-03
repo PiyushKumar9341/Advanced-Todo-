@@ -11,7 +11,7 @@ html {
 body {
   font-family: 'Inter', sans-serif;
   background-color: #f0f2f5;
-  display: block;              /* pehle flex tha, jisse footer + container ka layout mobile pe weird ho sakta tha */
+  display: block;
   min-height: 100vh;
   margin: 0;
   padding: 0;
@@ -23,15 +23,21 @@ body {
 /* Main card container */
 
 .container {
-  background-color: #ffffff;
-  border-radius: 15px;
-  padding: 30px;
-  margin: 50px auto;
+  background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(248,250,252,0.98));
+  border-radius: 20px;
+  padding: 30px 22px 28px;
+  margin: 40px auto 50px;
   max-width: 600px;
-  width: 90%;
+  width: 94%;
   text-align: center;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3), 0 0 20px rgba(0, 123, 255, 0.2);
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.35s ease,
+    transform 0.25s ease;
+  box-shadow:
+    0 0 0 1px rgba(59,130,246,0.18),
+    0 0 26px 6px rgba(96,165,250,0.38),
+    0 0 60px 18px rgba(147,197,253,0.45);
   box-sizing: border-box;
 }
 
@@ -41,9 +47,9 @@ h1 {
   font-family: 'Orbitron', sans-serif;
   color: #007bff;
   margin-bottom: 5px;
-  font-size: 2.5em;
+  font-size: 2.2em;
   font-weight: 700;
-  text-shadow: none;
+  text-shadow: 0 0 4px rgba(0,123,255,0.25);
 }
 
 /* Greeting */
@@ -88,7 +94,7 @@ h1 {
 /* Section titles / description */
 
 h2.section-title {
-  font-size: 1.8em;
+  font-size: 1.6em;
   font-weight: 700;
   color: #007bff;
   margin-top: 30px;
@@ -126,13 +132,16 @@ h2.section-title {
   align-items: center;
   gap: 10px;
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: 12px;
   background-color: #f8f9fa;
   border: 1px solid #e2e6ea;
   box-shadow: 0 2px 4px rgba(0,0,0,0.04);
   text-align: left;
-  transition: transform 0.15s ease, box-shadow 0.2s ease,
-              border-color 0.2s ease, background-color 0.2s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .feature-main {
@@ -226,17 +235,18 @@ h3.feature-title {
   flex-grow: 1;
   padding: 12px 15px;
   border: 1px solid #cbd5e0;
-  border-radius: 8px;
+  border-radius: 999px;
   font-size: 1em;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 #taskInput:focus,
 #taskInput:hover {
   border-color: #007bff !important;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25),
-              0 0 8px rgba(0, 123, 255, 0.5) !important;
+  box-shadow:
+    0 0 0 3px rgba(0, 123, 255, 0.25),
+    0 0 8px rgba(0, 123, 255, 0.5) !important;
 }
 
 /* Add Task */
@@ -246,11 +256,14 @@ h3.feature-title {
   color: white;
   padding: 12px 20px;
   border: none;
-  border-radius: 8px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: 1em;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
 }
 
 #addTaskBtn:hover {
@@ -258,7 +271,11 @@ h3.feature-title {
   transform: translateY(-1px);
 }
 
-/* Clear all (now centered below input) */
+#addTaskBtn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* Clear all */
 
 .clear-all-wrapper {
   display: flex;
@@ -271,25 +288,19 @@ h3.feature-title {
   color: #ffffff;
   padding: 12px 16px;
   border: none;
-  border-radius: 8px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: 0.9em;
   font-weight: 500;
   white-space: nowrap;
-  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.08);
-  max-width: 100%;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
 }
 
 #clearAllBtn:hover {
   background-color: #ea580c;
   transform: translateY(-1px);
-  box-shadow: 0 6px 10px rgba(0,0,0,0.12);
-}
-
-#clearAllBtn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.16);
 }
 
 /* Filters */
@@ -307,11 +318,14 @@ h3.feature-title {
   color: white;
   padding: 10px 15px;
   border: none;
-  border-radius: 8px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: 0.9em;
-  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
 
 .filter-btn:hover {
@@ -338,15 +352,25 @@ h3.feature-title {
 #taskList li {
   background-color: #f8f9fa;
   border: 1px solid #e2e6ea;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 15px;
   margin-bottom: 10px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.15s ease,
+    opacity 0.25s ease;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+#taskList li:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(15,23,42,0.1);
 }
 
 #taskList li span {
@@ -363,7 +387,7 @@ h3.feature-title {
   display: flex;
   gap: 5px;
   margin-left: auto;
-  flex-wrap: wrap; /* overflow fix */
+  flex-wrap: wrap;
 }
 
 #taskList li.completed span {
@@ -375,6 +399,7 @@ h3.feature-title {
   background-color: #d4edda;
   border-color: #c3e6cb;
   color: #155724;
+  opacity: 0.9;
 }
 
 #taskList li.completed .complete-btn {
@@ -385,10 +410,10 @@ h3.feature-title {
 #taskList li button {
   padding: 8px 12px;
   border: none;
-  border-radius: 5px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: 0.85em;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
@@ -421,7 +446,7 @@ h3.feature-title {
   color: #555;
   margin-top: 5px;
   margin-bottom: 20px;
-  font-size: 1.1em;
+  font-size: 1.05em;
   padding: 0 10px;
 }
 
@@ -475,10 +500,10 @@ footer {
   color: white;
   padding: 6px 10px;
   border: none;
-  border-radius: 5px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: 0.8em;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
@@ -498,7 +523,7 @@ footer {
   left: 50%;
   transform: translateX(-50%);
   padding: 10px 20px;
-  border-radius: 8px;
+  border-radius: 999px;
   font-size: 0.9em;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   z-index: 1001;
@@ -523,9 +548,18 @@ footer {
   border-radius: 50%;
   font-size: 18px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease,
+    opacity 0.25s ease;
   max-width: 56px;
   max-height: 56px;
+}
+
+#scrollToTopBtn.show {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 #scrollToTopBtn:hover {
@@ -558,13 +592,13 @@ footer {
   inset: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(15,23,42,0.55);
   display: none;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   padding: 16px;
   box-sizing: border-box;
   max-width: 100%;
@@ -572,29 +606,68 @@ footer {
 
 #welcomeModal {
   background: #ffffff;
-  padding: 30px;
-  border-radius: 10px;
-  text-align: center;
-  max-width: 400px;
+  padding: 28px 22px 22px;      /* zyada inner space */
+  border-radius: 18px;
+  text-align: left;
+  max-width: 420px;             /* pehle 380 tha, ab thoda wide */
   width: 100%;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 0 20px rgba(0, 123, 255, 0.6),
-              0 0 40px rgba(0, 123, 255, 0.3);
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.35s ease,
+    opacity 0.35s ease,
+    transform 0.35s ease;
+  box-shadow:
+    0 0 0 1px rgba(0,123,255,0.22),
+    0 24px 60px rgba(15,23,42,0.7),
+    0 0 32px rgba(59,130,246,0.35);
   border: none;
   margin: 0 auto;
   box-sizing: border-box;
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
 }
 
+
+#welcomeOverlay.show #welcomeModal {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+#welcomeModal h2 {
+  margin: 0 0 14px;
+  font-family: inherit;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.4;             /* compact feeling kam */
+}
+
+
+/* Name text field inside popup */
+
 #userNameInput {
-  width: calc(100% - 20px);
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1em;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 18px;          /* 15 -> 18 */
+  border: 1px solid #cbd5e0;
+  border-radius: 999px;
+  font-size: 0.95em;
   outline: none;
   text-align: center;
   color: #333;
+  background-color: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.25s ease, background-color 0.2s ease;
+}
+
+
+#userNameInput:focus {
+  border-color: #007bff;
+  background-color: #f8fbff;
+  box-shadow:
+    0 0 0 3px rgba(0, 123, 255, 0.45),
+    0 0 18px rgba(0, 123, 255, 0.7);
 }
 
 #welcomeModal button {
@@ -602,11 +675,11 @@ footer {
   color: white;
   padding: 10px 20px;
   border: none;
-  border-radius: 5px;
+  border-radius: 999px;
   cursor: pointer;
-  font-size: 1em;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  font-size: 0.95em;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
 }
 
 #welcomeModal button:hover {
@@ -625,9 +698,9 @@ footer {
 
 #modalButtonsContainer {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 4px;
 }
 
 /* =========================
@@ -642,13 +715,19 @@ footer {
   border-radius: 9999px;
   cursor: pointer;
   font-size: 0.9em;
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   margin-bottom: 20px;
 }
 
 #darkModeToggle:hover {
   background-color: #cbd5e0;
+  transform: translateY(-1px);
 }
 
 .auth-buttons {
@@ -668,7 +747,10 @@ footer {
   border-radius: 9999px;
   cursor: pointer;
   font-size: 0.9em;
-  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -698,10 +780,11 @@ body.dark-mode {
 }
 
 body.dark-mode .container {
-  background-color: #02010a;
+  background: radial-gradient(circle at top, #020617 0, #02010a 40%, #000 100%);
   box-shadow:
-    0 0 40px rgba(255, 255, 255, 0.08),
-    0 0 80px rgba(255, 255, 255, 0.05);
+    0 0 0 1px rgba(148,163,184,0.28),
+    0 0 55px rgba(248,250,252,0.35),
+    0 0 120px rgba(248,250,252,0.25);
 }
 
 body.dark-mode h1 {
@@ -765,8 +848,9 @@ body.dark-mode #taskInput {
 body.dark-mode #taskInput:focus,
 body.dark-mode #taskInput:hover {
   border-color: #22d3ee !important;
-  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.6),
-              0 0 14px rgba(34, 211, 238, 0.9) !important;
+  box-shadow:
+    0 0 0 2px rgba(34, 211, 238, 0.6),
+    0 0 14px rgba(34, 211, 238, 0.9) !important;
 }
 
 body.dark-mode #addTaskBtn {
@@ -856,13 +940,25 @@ body.dark-mode #messageBox {
 body.dark-mode #welcomeModal {
   background: #020617;
   color: #e5e7eb;
-  box-shadow: 0 0 30px rgba(34, 211, 238, 0.7);
+  box-shadow:
+    0 0 0 1px rgba(56,189,248,0.4),
+    0 0 40px rgba(34,211,238,0.8);
 }
 
 body.dark-mode #userNameInput {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
   background-color: #020617;
   border-color: #1f2937;
   color: #e5e7eb;
+}
+
+body.dark-mode #userNameInput:focus {
+  border-color: #22d3ee;
+  box-shadow:
+    0 0 0 2px rgba(34, 211, 238, 0.8),
+    0 0 28px rgba(34, 211, 238, 0.95);
 }
 
 body.dark-mode #welcomeModal button {
@@ -910,34 +1006,13 @@ body.dark-mode .copy-email-btn:hover {
   border-color: #22d3ee;
 }
 
-body.dark-mode button,
-body.dark-mode #addTaskBtn,
-body.dark-mode #clearAllBtn,
-body.dark-mode .filter-btn,
-body.dark-mode #googleLoginBtn,
-body.dark-mode #logoutBtn,
-body.dark-mode .copy-email-btn {
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.18);
-}
-
-body.dark-mode button:hover,
-body.dark-mode #addTaskBtn:hover,
-body.dark-mode #clearAllBtn:hover,
-body.dark-mode .filter-btn:hover,
-body.dark-mode #googleLoginBtn:hover,
-body.dark-mode #logoutBtn:hover,
-body.dark-mode .copy-email-btn:hover {
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.28);
-}
-
 /* =========================
    Mobile tweaks
    ========================= */
 
 @media (max-width: 600px) {
   .container {
-    margin: 20px auto;
+    margin: 20px auto 32px;
     padding: 20px 16px;
     max-width: 100%;
     width: 100%;
@@ -1002,7 +1077,7 @@ body.dark-mode .copy-email-btn:hover {
   font-family: 'Inter', sans-serif;
 }
 
-/* Mobile vertical scrollbar hide cosmetic */
+/* Mobile vertical scrollbar cosmetic hide */
 
 @media (max-width: 600px) {
   body {
