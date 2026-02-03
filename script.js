@@ -57,7 +57,7 @@ let currentUser   = null;   // firebase user
 let tasks         = [];
 
 // =========================
-// Helper – toast messages
+/* Helper – toast messages */
 // =========================
 
 function showMessage(text, type = 'info') {
@@ -99,13 +99,42 @@ function clearLocalName() {
   localStorage.removeItem('userName');
 }
 
+// Time‑based AI style message
+function getAiWelcomeMessage(name) {
+  const now  = new Date();
+  const hour = now.getHours();
+
+  let timeGreeting = 'Hey';
+  if (hour >= 5 && hour < 12) {
+    timeGreeting = 'Good morning';
+  } else if (hour >= 12 && hour < 17) {
+    timeGreeting = 'Good afternoon';
+  } else if (hour >= 17 && hour < 22) {
+    timeGreeting = 'Good evening';
+  } else {
+    timeGreeting = 'Burning the midnight oil';
+  }
+
+  const cleanName = name && name.trim() ? name.trim() : 'there';
+  return `${timeGreeting}, ${cleanName}. Let’s win one small task today.`;
+}
+
 function updateGreeting(name) {
   const greetingEl = document.getElementById('personalizedGreeting');
   const nameEl     = document.getElementById('userName');
   if (!greetingEl || !nameEl) return;
 
   if (name && name.trim() !== '') {
+    const aiMessage = getAiWelcomeMessage(name);
+
+    // AI text line
+    greetingEl.textContent = aiMessage + ' ';
+
+    // Span me sirf naam (styling/hover ke liye)
     nameEl.textContent = name;
+    greetingEl.appendChild(nameEl); // ensure span inside p
+    greetingEl.innerHTML += '🚀';
+
     greetingEl.style.display = 'block';
   } else {
     nameEl.textContent = '';
