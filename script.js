@@ -2,17 +2,18 @@
 // Firebase Setup (compat)
 // =========================
 
+// v9 modular snippet ko compat style me convert kiya hai
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDJfJ1NkJOmmsYSb7RLJPFeZR_8-tqoUgQ",
+  authDomain: "advanced-todo-b93ba.firebaseapp.com",
+  projectId: "advanced-todo-b93ba",
+  storageBucket: "advanced-todo-b93ba.firebasestorage.app",
+  messagingSenderId: "685947792786",
+  appId: "1:685947792786:web:e49cf23e4a977c4c0be54b",
+  measurementId: "G-CWBZZYCR1M"
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
 const db   = firebase.firestore();
 
@@ -58,7 +59,7 @@ let currentUser   = null;
 let tasks         = [];
 
 // =========================
-// Helpers
+// Helpers (messages + greeting)
 // =========================
 
 function showMessage(text, type = 'info') {
@@ -83,28 +84,6 @@ function showMessage(text, type = 'info') {
   }, 2000);
 }
 
-function getGreetingByTime() {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'Good morning';
-  if (hour < 18) return 'Good afternoon';
-  return 'Good evening';
-}
-
-// yeh function DOM ko clean way se update karega
-function updateGreeting(name) {
-  if (!personalizedGreeting) return;
-
-  if (name && name.trim() !== '') {
-    personalizedGreeting.style.display = 'block';
-    personalizedGreeting.innerHTML =
-      `Hello.. <span id="userName" class="font-bold text-blue-600 cursor-pointer">${name}</span>🚀`;
-  } else {
-    personalizedGreeting.style.display = 'none';
-    personalizedGreeting.innerHTML =
-      `Hello.. <span id="userName" class="font-bold text-blue-600 cursor-pointer"></span>🚀`;
-  }
-}
-
 function saveLocalName(name) {
   if (!name) return;
   localStorage.setItem('userName', name);
@@ -116,6 +95,21 @@ function getLocalName() {
 
 function clearLocalName() {
   localStorage.removeItem('userName');
+}
+
+// Greeting: span text + display toggle
+function updateGreeting(name) {
+  const greetingEl = document.getElementById('personalizedGreeting');
+  const nameEl     = document.getElementById('userName');
+  if (!greetingEl || !nameEl) return;
+
+  if (name && name.trim() !== '') {
+    nameEl.textContent = name;
+    greetingEl.style.display = 'block';
+  } else {
+    nameEl.textContent = '';
+    greetingEl.style.display = 'none';
+  }
 }
 
 // =========================
@@ -421,7 +415,7 @@ if (closeWelcomeBtn) {
 
 if (welcomeGoogleBtn) {
   welcomeGoogleBtn.addEventListener('click', async () => {
-    googleLoginBtn.click();
+    if (googleLoginBtn) googleLoginBtn.click();
   });
 }
 
@@ -434,10 +428,11 @@ const provider = new firebase.auth.GoogleAuthProvider();
 if (googleLoginBtn) {
   googleLoginBtn.addEventListener('click', async () => {
     try {
-      await auth.signInWithPopup(provider); // click handler ke andar, popup-blocked kam hoga [web:31][web:34]
-      // success pe onAuthStateChanged chalega
+      const result = await auth.signInWithPopup(provider);  // compat style
+      console.log('Signed in as:', result.user && result.user.displayName);
+      // UI update onAuthStateChanged me hoga
     } catch (err) {
-      console.error('Google sign-in error:', err);
+      console.error('Google sign-in error:', err.code, err.message);
       showMessage('Google sign-in failed.', 'error');
     }
   });
@@ -453,10 +448,10 @@ if (logoutBtn) {
       renderTasks();
 
       clearLocalName();
-      updateGreeting('');
+      updateGreeting('');   // logout pe greeting clear
 
-      googleLoginBtn.style.display = 'inline-block';
-      logoutBtn.style.display = 'none';
+      if (googleLoginBtn) googleLoginBtn.style.display = 'inline-block';
+      if (logoutBtn)      logoutBtn.style.display = 'none';
 
       showMessage('You are signed out.');
     } catch (err) {
@@ -473,24 +468,28 @@ if (logoutBtn) {
 auth.onAuthStateChanged(async (user) => {
   currentUser = user;
 
+  console.log('Auth state user:', user && user.displayName);
+
   if (user) {
     // Logged in
-    if (googleLoginBtn) googleLoginBtn.style.display = 'inline-block';
-    if (logoutBtn) logoutBtn.style.display = 'inline-block';
+    if (googleLoginBtn) googleLoginBtn.style.display = 'none';
+    if (logoutBtn)      logoutBtn.style.display = 'inline-block';
 
-    const displayName = user.displayName || getLocalName();
+    let displayName = user.displayName;
+    if (!displayName) displayName = getLocalName();
+
     if (displayName) {
       saveLocalName(displayName);
-      updateGreeting(displayName);   // yahan se "Hello.. Piyush" aayega
+      updateGreeting(displayName);
     } else {
-      openWelcomeModal();
+      updateGreeting('');
     }
 
     await loadTasksForUser(user.uid);
   } else {
     // Logged out
     if (googleLoginBtn) googleLoginBtn.style.display = 'inline-block';
-    if (logoutBtn) logoutBtn.style.display = 'none';
+    if (logoutBtn)      logoutBtn.style.display = 'none';
 
     tasks = [];
     renderTasks();
@@ -509,8 +508,7 @@ window.addEventListener('load', () => {
   if (savedName) {
     updateGreeting(savedName);
   } else {
-    // first time, agar chaho to popup dikhao
-    // openWelcomeModal();
+    updateGreeting('');
   }
   renderTasks();
 });
