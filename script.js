@@ -99,13 +99,60 @@ function clearLocalName() {
   localStorage.removeItem('userName');
 }
 
+// Time‑based AI style message (outer greeting)
+function getAiWelcomeMessage(name) {
+  const now  = new Date();
+  const hour = now.getHours();
+
+  let timeGreeting = 'Hey';
+  if (hour >= 5 && hour < 12) {
+    timeGreeting = 'Good morning';
+  } else if (hour >= 12 && hour < 17) {
+    timeGreeting = 'Good afternoon';
+  } else if (hour >= 17 && hour < 22) {
+    timeGreeting = 'Good evening';
+  } else {
+    timeGreeting = 'Burning the midnight oil';
+  }
+
+  const cleanName = name && name.trim() ? name.trim() : 'there';
+  return `${timeGreeting}, ${cleanName}. Let’s win one small task today.`;
+}
+
+// AI message for popup card
+function getPopupAiMessage(name) {
+  const now  = new Date();
+  const hour = now.getHours();
+
+  let line = 'Let’s start with one tiny task.';
+  if (hour >= 5 && hour < 12) {
+    line = 'Perfect time to set the tone for your morning.';
+  } else if (hour >= 12 && hour < 17) {
+    line = 'Afternoon boost: pick one task and move it forward.';
+  } else if (hour >= 17 && hour < 22) {
+    line = 'Evening focus: wrap the day with one solid win.';
+  } else {
+    line = 'Late hours, but a small step now will make tomorrow easier.';
+  }
+
+  const cleanName = name && name.trim() ? name.trim() : 'there';
+  return `${cleanName}, ${line}`;
+}
+
 function updateGreeting(name) {
   const greetingEl = document.getElementById('personalizedGreeting');
   const nameEl     = document.getElementById('userName');
   if (!greetingEl || !nameEl) return;
 
   if (name && name.trim() !== '') {
+    const aiMessage = getAiWelcomeMessage(name);
+
+    // Reset p content and append span again
+    greetingEl.textContent = aiMessage + ' ';
     nameEl.textContent = name;
+    greetingEl.appendChild(nameEl);
+    greetingEl.innerHTML += '🚀';
+
     greetingEl.style.display = 'block';
   } else {
     nameEl.textContent = '';
@@ -127,7 +174,7 @@ function closeWelcomeModal() {
   welcomeOverlay.style.display = 'none';
 }
 
-// Sirf "Let's Go"
+// "Let's Go" + AI message inside popup
 if (submitNameBtn) {
   submitNameBtn.addEventListener('click', () => {
     const name = userNameInput.value.trim();
@@ -135,9 +182,29 @@ if (submitNameBtn) {
       showMessage('Please enter your name.', 'error');
       return;
     }
+
+    // 1) Naam store + outer greeting update
     saveLocalName(name);
     updateGreeting(name);
-    closeWelcomeModal();
+
+    // 2) Popup ke paragraph me AI-style line dikhao
+    const popupText = document.querySelector('#welcomeModal p.text-sm');
+    if (popupText) {
+      popupText.textContent = getPopupAiMessage(name);
+    }
+
+    // 3) Button label ko change karo (nice touch)
+    submitNameBtn.textContent = 'Nice, let’s go!';
+
+    // 4) Thoda time user ko padne do, fir popup band + reset
+    setTimeout(() => {
+      closeWelcomeModal();
+      submitNameBtn.textContent = "Let's Go";
+      if (popupText) {
+        popupText.textContent =
+          'Tell me your name so I can personalize your Advanced TODO.';
+      }
+    }, 1400);
   });
 }
 
