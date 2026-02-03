@@ -39,10 +39,9 @@ const personalizedGreeting = document.getElementById('personalizedGreeting');
 const userNameSpan         = document.getElementById('userName');
 
 const welcomeOverlay       = document.getElementById('welcomeOverlay');
+const welcomeModal         = document.getElementById('welcomeModal');
 const userNameInput        = document.getElementById('userNameInput');
 const submitNameBtn        = document.getElementById('submitNameBtn');
-const welcomeGoogleBtn     = document.getElementById('welcomeGoogleBtn');
-const closeWelcomeBtn      = document.getElementById('closeWelcomeBtn');
 
 const emailAddressFooter   = document.getElementById('emailAddressFooter');
 const copyEmailBtnFooter   = document.getElementById('copyEmailBtnFooter');
@@ -54,11 +53,11 @@ const statsBar             = document.getElementById('statsBar');
 // =========================
 
 let currentFilter = 'all';
-let currentUser   = null;
+let currentUser   = null;   // firebase user
 let tasks         = [];
 
 // =========================
-// Helpers (messages + greeting + name)
+// Helper – toast messages
 // =========================
 
 function showMessage(text, type = 'info') {
@@ -83,6 +82,10 @@ function showMessage(text, type = 'info') {
   }, 2000);
 }
 
+// =========================
+// Name handling + greeting
+// =========================
+
 function saveLocalName(name) {
   if (!name) return;
   localStorage.setItem('userName', name);
@@ -96,7 +99,6 @@ function clearLocalName() {
   localStorage.removeItem('userName');
 }
 
-// Greeting: span text + display toggle
 function updateGreeting(name) {
   const greetingEl = document.getElementById('personalizedGreeting');
   const nameEl     = document.getElementById('userName');
@@ -112,7 +114,35 @@ function updateGreeting(name) {
 }
 
 // =========================
-// Firestore helpers
+// AI Welcome modal
+// =========================
+
+function openWelcomeModal() {
+  if (!welcomeOverlay) return;
+  welcomeOverlay.style.display = 'flex';
+}
+
+function closeWelcomeModal() {
+  if (!welcomeOverlay) return;
+  welcomeOverlay.style.display = 'none';
+}
+
+// Sirf "Let's Go"
+if (submitNameBtn) {
+  submitNameBtn.addEventListener('click', () => {
+    const name = userNameInput.value.trim();
+    if (!name) {
+      showMessage('Please enter your name.', 'error');
+      return;
+    }
+    saveLocalName(name);
+    updateGreeting(name);
+    closeWelcomeModal();
+  });
+}
+
+// =========================
+// Firestore helpers (per user)
 // =========================
 
 function getTasksCollectionRef(uid) {
@@ -134,7 +164,9 @@ async function loadTasksForUser(uid) {
     renderTasks();
   } catch (err) {
     console.error('Error loading tasks:', err);
-    showMessage('Could not load tasks.', 'error');
+    showMessage('Could not load tasks (check Firestore rules).', 'error');
+    tasks = [];
+    renderTasks();
   }
 }
 
@@ -380,47 +412,6 @@ if (copyEmailBtnFooter && emailAddressFooter) {
 }
 
 // =========================
-// Welcome Modal (AI welcome)
-// =========================
-
-function openWelcomeModal() {
-  if (!welcomeOverlay) return;
-  welcomeOverlay.style.display = 'flex';
-}
-
-function closeWelcomeModal() {
-  if (!welcomeOverlay) return;
-  welcomeOverlay.style.display = 'none';
-}
-
-// "Let's Go!" – sirf naam, Google se link nahi
-if (submitNameBtn) {
-  submitNameBtn.addEventListener('click', () => {
-    const name = userNameInput.value.trim();
-    if (!name) {
-      showMessage('Please enter your name.', 'error');
-      return;
-    }
-    saveLocalName(name);
-    updateGreeting(name);
-    closeWelcomeModal();
-  });
-}
-
-if (closeWelcomeBtn) {
-  closeWelcomeBtn.addEventListener('click', () => {
-    closeWelcomeModal();
-  });
-}
-
-// Popup ke andar Google button → main Google button trigger
-if (welcomeGoogleBtn) {
-  welcomeGoogleBtn.addEventListener('click', async () => {
-    if (googleLoginBtn) googleLoginBtn.click();
-  });
-}
-
-// =========================
 // Google Auth (sirf sync)
 // =========================
 
@@ -431,7 +422,6 @@ if (googleLoginBtn) {
     try {
       const result = await auth.signInWithPopup(provider);
       console.log('Signed in as:', result.user && result.user.email);
-      // Naam humesha local storage (popup) se aayega
     } catch (err) {
       console.error('Google sign-in error:', err.code, err.message);
       showMessage('Google sign-in failed.', 'error');
