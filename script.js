@@ -42,6 +42,7 @@ const welcomeOverlay       = document.getElementById('welcomeOverlay');
 const welcomeModal         = document.getElementById('welcomeModal');
 const userNameInput        = document.getElementById('userNameInput');
 const submitNameBtn        = document.getElementById('submitNameBtn');
+const welcomeDescription   = document.getElementById('welcomeDescription');
 
 const emailAddressFooter   = document.getElementById('emailAddressFooter');
 const copyEmailBtnFooter   = document.getElementById('copyEmailBtnFooter');
@@ -165,9 +166,8 @@ if (submitNameBtn) {
     updateGreeting(name);
 
     // 2) Popup ke paragraph me AI-style line dikhao
-    const popupText = document.querySelector('#welcomeModal p.text-sm');
-    if (popupText) {
-      popupText.textContent = getPopupAiMessage(name);
+    if (welcomeDescription) {
+      welcomeDescription.textContent = getPopupAiMessage(name);
     }
 
     // 3) Button label change
@@ -177,8 +177,8 @@ if (submitNameBtn) {
     setTimeout(() => {
       closeWelcomeModal();
       submitNameBtn.textContent = "Let's Go";
-      if (popupText) {
-        popupText.textContent =
+      if (welcomeDescription) {
+        welcomeDescription.textContent =
           'Tell me your name so I can personalize your Advanced TODO.';
       }
     }, 1400);
@@ -430,6 +430,22 @@ const quotes = [
   "Done is better than perfect.",
   "You don’t have to be great to start, but you have to start to be great.",
   "Focus on the next task, not the whole mountain.",
+  "Progress, not perfection.",
+  "One small task now makes tomorrow easier.",
+  "You’re one focused session away from feeling proud of yourself.",
+  "If it takes less than 2 minutes, do it now.",
+  "Slow progress is still progress.",
+  "Discipline beats motivation.",
+  "Your future self is watching what you do today.",
+  "Action cures overthinking.",
+  "Clarity comes from doing, not from thinking.",
+  "Win the day by winning the next 10 minutes.",
+  "You don’t need more time, you need more focus.",
+  "Tiny habits, big impact.",
+  "Don’t break the chain—do one tiny thing today.",
+  "A finished small task is better than a perfect idea in your head.",
+  "The best time to start was yesterday. The next best time is now.",
+  "Momentum is built, not found."
 ];
 
 function showRandomQuote() {
