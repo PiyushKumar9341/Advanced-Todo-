@@ -30,11 +30,9 @@
     <button id="darkModeToggle">Dark Mode</button>
 
     <!-- Personalized Welcome Message -->
-      <p id="personalizedGreeting" class="greeting-message" style="display:none;">
-        Hello.. <span id="userName" class="font-bold text-blue-600 cursor-pointer"></span>🚀
-      </p>
-
-
+    <p id="personalizedGreeting" class="greeting-message" style="display:none;">
+      Hello.. <span id="userName" class="font-bold text-blue-600 cursor-pointer"></span>🚀
+    </p>
 
     <!-- Google Auth Buttons -->
     <div class="auth-buttons">
@@ -76,12 +74,7 @@
         <div class="feature-row">
           <div class="feature-main">
             <div class="feature-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                   viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 8V4H8" />
-                <path d="M2 14h2a2 2 0 0 1 2 2v3a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-3a2 2 0 0 1 2-2h2v-2a2 2 0 0 0-2-2h-2a2 2 0 0 1-2-2V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v4" />
-              </svg>
+              <!-- icon svg -->
             </div>
             <div class="feature-text">
               <h3 class="feature-title">AI‑powered welcome</h3>
@@ -97,14 +90,7 @@
         <div class="feature-row">
           <div class="feature-main">
             <div class="feature-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                   viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M8 21v-2a4 4 0 0 1 3-3.87" />
-                <circle cx="12" cy="7" r="4" />
-                <path d="M6 8a4 4 0 1 0 6-3.46" />
-              </svg>
+              <!-- icon svg -->
             </div>
             <div class="feature-text">
               <h3 class="feature-title">Google sign‑in & sync</h3>
@@ -116,16 +102,11 @@
           <span class="feature-tag">Cloud backup</span>
         </div>
 
-        <!-- 3. Smart task list -->
+        <!-- 3. Smart task management -->
         <div class="feature-row">
           <div class="feature-main">
             <div class="feature-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                   viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
-                <path d="m9 12 2 2 4-4" />
-              </svg>
+              <!-- icon svg -->
             </div>
             <div class="feature-text">
               <h3 class="feature-title">Smart task management</h3>
@@ -141,13 +122,7 @@
         <div class="feature-row">
           <div class="feature-main">
             <div class="feature-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                   viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 0 1-9-9Z" />
-                <path d="M19 3v4" />
-                <path d="M21 5h-4" />
-              </svg>
+              <!-- icon svg -->
             </div>
             <div class="feature-text">
               <h3 class="feature-title">Dark / light themes</h3>
@@ -163,11 +138,7 @@
         <div class="feature-row">
           <div class="feature-main">
             <div class="feature-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                   viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
+              <!-- icon svg -->
             </div>
             <div class="feature-text">
               <h3 class="feature-title">Motivational micro‑nudges</h3>
@@ -183,22 +154,19 @@
   </div>
 
   <!-- AI Welcome Pop-up HTML -->
-    <div id="welcomeOverlay">
-          <div id="welcomeModal">
-              <h2 class="text-xl font-semibold mb-3">What should I call you?</h2>
-              <p class="text-sm mb-4">Tell me your name so I can personalize your Advanced TODO.</p>
-              <input
-                id="userNameInput"
-                type="text"
-                placeholder="Enter your name..."
-              />
-              <div id="modalButtonsContainer">
-                <button id="submitNameBtn">Let&apos;s Go</button>
-              </div>
-          </div>
-     </div>
-
-
+  <div id="welcomeOverlay" style="display:none;">
+    <div id="welcomeModal">
+      <h2 class="text-xl font-semibold mb-3">What should I call you?</h2>
+      <input
+        id="userNameInput"
+        type="text"
+        placeholder="Enter your name..."
+      />
+      <div id="modalButtonsContainer">
+        <button id="submitNameBtn">Let&apos;s Go</button>
+      </div>
+    </div>
+  </div>
 
   <div id="messageBox"></div>
 
